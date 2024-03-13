@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!--    <h2>Szczegóły pacjenta: {{ patient.first_name }} {{ patient.last_name }}</h2>-->
+<!--    <p>Data urodzenia: {{ patient.birthday }}</p>-->
+<!--    <p>PESEL: {{ patient.pesel }}</p>-->
+<!--    <p>Numer telefonu: {{ patient.phone_number }}</p>-->
+    <!-- Dodaj inne informacje o pacjencie -->
+
+<br />
+<div class="container-fluid" style="background-color: #ffffff;">
+  <div class="row" >
+    <!--PATIENT, SEARCH FORM AND VISITS LIST-->
+    <div class="col-md-12">
+      <div class="container sticky-container" style="background-color: #ffffff;">
+        <!--SEARCH FORM-->
+        <div class="card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color: #004080; ">
+          <div class="row g-0">
+            <form action="{% url 'patient_search' %}" method="POST" class="d-flex">
+              {% csrf_token %}
+              <div class="col-md-3 border-right">
+                <div class="col text-center">
+                  <label class="form-label" for="inputFirstName">First Name:</label>
+                  <input type="text" id="inputFirstName" name="inputFirstName" class="form-control form-control-lg" style="width: 85%; margin: 0 auto;" />
+                  <br />
+                </div>
+              </div>
+              <div class="col-md-3 border-right">
+                <div class="col text-center">
+                  <label class="form-label" for="inputLastName">Last Name:</label>
+                  <input type="text" id="inputLastName" name="inputLastName" class="form-control form-control-lg" style="width: 85%; margin: 0 auto;" />
+                </div>
+              </div>
+              <div class="col-md-3 border-right">
+                <div class="col text-center">
+                  <label class="form-label" for="inputPhone">Phone:</label>
+                  <input type="text" id="inputPhone" name="inputPhone" class="form-control form-control-lg" style="width: 85%; margin: 0 auto;" />
+                </div>
+              </div>
+              <div class="col-md-3 d-flex align-items-center">
+                <div class="col text-center">
+                  <button type="submit" class="btn btn-outline-light">Search</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!--PATIENT INFO-->
+        <div class="card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color: #504080; ">
+          <div class="row g-0">
+            <div class="col-md-3 border-right d-flex align-items-center ">
+              <div class="col text-center">
+                <div class="card-body">
+                  <h5>Full name</h5>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-2 border-right d-flex align-items-center ">
+              <div class="col text-center">
+                <div class="card-body">
+                  <h6>Birthday</h6>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-2 border-right d-flex align-items-center ">
+              <div class="col text-center">
+                <div class="card-body">
+                  <h6>Pesel</h6>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-2 border-right d-flex align-items-center ">
+              <div class="col text-center">
+                <div class="card-body">
+                  <h6>Phone number</h6>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3 d-flex align-items-center">
+      <!--            <a href="#" class="btn btn-outline-light">assign</a>-->
+            </div>
+          </div>
+        </div>
+      </div>
+<!--      PATIENT LIST-->
+      <div class="container">
+        {% for patient in patients%}
+        <div class="card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color: #004080; ">
+          <div class="row g-0">
+            <div class="col-md-3 border-right d-flex align-items-center ">
+              <div class="col text-center">
+                <div class="card-body">
+                  <h5>{{ patient.first_name }} {{ patient.last_name }}</h5>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-2 border-right d-flex align-items-center ">
+              <div class="col text-center">
+                <div class="card-body">
+                  <h6>{{ patient.birthday|date:"F j, Y" }}</h6>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-2 border-right d-flex align-items-center ">
+              <div class="col text-center">
+                <div class="card-body">
+                  <h6>{{ patient.pesel }}</h6>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-2 border-right d-flex align-items-center ">
+              <div class="col text-center">
+                <div class="card-body">
+                  <h6>{{ patient.phone_number }}</h6>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3 d-flex align-items-center">
+              <div class="col text-center">
+                <a href="{% url 'patient_detail' patient_id=patient.id %}" class="btn btn-outline-light">Profile</a>              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+{% endblock %}
+  </div>
+</div>

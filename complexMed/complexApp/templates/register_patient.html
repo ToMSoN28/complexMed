@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<section class="vh-100 gradient-custom">
+  <div class="container py-5 h-100">
+    <div class="row d-flex justify-content-center align-items-center h-100">
+      <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+        <div class="card" style="background-color: #004080; color: white; border-radius: 1rem;">
+          <div class="card-body p-5 text-center">
+
+            <div class="mb-md-1 mt-md-1 pb-1">
+              <h2 class="fw-bold mb-2 text-uppercase">Patient Registration</h2>
+              <p class="text-white-50 mb-5">Enter patient information</p>
+
+              <form method="post" action="{% url 'patient_registration' %}">
+                {% csrf_token %}
+
+                <div class="row mb-4">
+                  <div class="col text-end">
+                    <label class="form-label" for="inputFirstName">First Name:</label>
+                  </div>
+                  <div class="col">
+                    <input type="text" id="inputFirstName" name="inputFirstName" class="form-control form-control-lg" />
+                  </div>
+                </div>
+
+                <div class="row mb-4">
+                  <div class="col text-end">
+                    <label class="form-label" for="inputLastName">Last Name:</label>
+                  </div>
+                  <div class="col">
+                    <input type="text" id="inputLastName" name="inputLastName" class="form-control form-control-lg" />
+                  </div>
+                </div>
+
+                <div class="row mb-4">
+                  <div class="col text-end">
+                    <label class="form-label" for="inputPesel">PESEL:</label>
+                  </div>
+                  <div class="col">
+                    <input type="text" id="inputPesel" name="inputPesel" class="form-control form-control-lg" />
+                  </div>
+                </div>
+
+                <div class="row mb-4">
+                  <div class="col text-end">
+                    <label class="form-label" for="inputPhoneNumber">Phone Number:</label>
+                  </div>
+                  <div class="col">
+                    <input type="text" id="inputPhoneNumber" name="inputPhoneNumber" class="form-control form-control-lg" />
+                  </div>
+                </div>
+
+                <button class="btn btn-outline-light btn-lg px-5" type="submit">Register</button>
+              </form>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

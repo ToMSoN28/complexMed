@@ -1,0 +1,274 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<br />
+<div class="container-fluid">
+  <div class="row">
+    <!--PATIENT, SEARCH FORM AND VISITS LIST-->
+    <div class="col-md-7">
+      <div class="container" style="background-color: #ffffff;">
+        <!--PATIENT-->
+        <div class="card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color: #004080; ">
+          <div class="row g-0">
+            <div class="col-md-3 border-right d-flex align-items-center ">
+              <div class="col text-center">
+                <div class="card-body">
+                  <p>Full name:</p>
+                  <h5>{{ patient.first_name }} {{ patient.last_name }}</h5>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3 border-right d-flex align-items-center ">
+              <div class="col text-center">
+                <div class="card-body">
+                  <p>Birthday:</p>
+                  <h6>{{ patient.birthday|date:"F j, Y" }}</h6>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3 border-right d-flex align-items-center ">
+              <div class="col text-center">
+                <div class="card-body">
+                  <p>Pesel:</p>
+                  <h6>{{ patient.pesel }}</h6>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3 border-right d-flex align-items-center ">
+              <div class="col text-center">
+                <div class="card-body">
+                  <p>Phone:</p>
+                  <h6>{{ patient.phone_number }}</h6>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!--SEARCH FORM-->
+        <div class="card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color: #004080; ">
+          <div class="row g-0">
+            <form action="{% url 'patient_detail' patient.id %}" method="POST" class="d-flex">
+              {% csrf_token %}
+              <div class="col-md-3 border-right">
+                <div class="col text-center">
+                  <label class="form-label" for="selectName">Name:</label>
+                    <select id="selectName" name="selectName" class="form-select" style="width: 85%; margin: 0 auto;">
+                        <!-- Dodaj opcje dla Nazwy -->
+                        <option value="option0">Choose Visit</option>
+                        {% for i in visits_names %}
+                        <option value="{{i.name}}">{{ i.name }}</option>
+                        {% endfor %}
+                        <!-- ... -->
+                    </select>
+                  <br />
+                </div>
+              </div>
+              <div class="col-md-3 border-right">
+                <div class="col text-center">
+                  <label class="form-label" for="selectDoctor">Doctor:</label>
+                    <select id="selectDoctor" name="selectDoctor" class="form-select" style="width: 85%; margin: 0 auto;">
+                        <!-- Dodaj opcje dla Lekarza -->
+                        <option value="0">Choose doctor</option>
+                        {% for doc in doctors %}
+                        <option value="{{ doc.user.id }}">{{ doc.user.first_name }} {{ doc.user.last_name }}</option>
+                        {% endfor %}
+                        <!-- ... -->
+                    </select>
+                    <br />
+                </div>
+              </div>
+              <div class="col-md-3 border-right">
+                <div class="col text-center">
+                  <label class="form-label" for="selectWeek">Week:</label>
+                    <select id="selectWeek" name="selectWeek" class="form-select" style="width: 85%; margin: 0 auto;">
+                        <!-- Dodaj opcje dla Dnia Tygodnia -->
+                        <option value="this">This week</option>
+                        <option value="next">Next week</option>
+                        <option value="inTwo">In two weeks</option>
+                        <!-- ... -->
+                    </select>
+                    <br />
+                </div>
+              </div>
+              <div class="col-md-3 d-flex align-items-center">
+                <div class="col text-center">
+                  <button type="submit" class="btn btn-outline-light">Search</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!--Days scroll frame-->
+        <div class="container">
+              <nav id="navbar-example3" class="h-100 flex-column align-items-stretch pe-4">
+                <nav class="nav nav-pills flex-row">
+                  {% for date in available_info %}
+                    <a class="nav-link" href="#item-{{ forloop.counter }}">{{ date }}</a>
+                  {% endfor %}
+                  <a class="nav-link" href="#item-22">Item 2</a>
+                  <a class="nav-link" href="#item-33">Item 3</a>
+                </nav>
+                <br />
+              </nav>
+
+              <div data-bs-spy="scroll" data-bs-target="#navbar-example3" data-bs-smooth-scroll="true" class="scrollspy-example-2 scrollable" tabindex="0" style="max-width: 100%; border-radius: 1rem;">
+                {% for date in available_info %}
+                <div id="item-{{ forloop.counter }}">
+                  <div class="card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color: #004080; ">
+                    <div class="row g-0">
+                      <div class="col-md-3 border-right d-flex align-items-center ">
+                        <div class="col text-center">
+                          <div class="card-body">
+                            <h5>{{ date }}</h5>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-9 border-right d-flex align-items-center "></div>
+                    </div>
+                  </div>
+                  {% for visit in available %}
+                    {% if visit.date|date:'F d, Y' == date %}
+                      <div class="card mb-3 text-white" style="max-width: 50vw; border-radius: 1rem;
+                       background-color: #0d503c;">
+                          <div class="row g-0">
+                              <div class="col-md-3 border-right d-flex align-items-center border-end">
+                                  <div class="col text-center">
+                                      <p>{{ visit.start_time }}</p>
+
+                                      <p>{{ visit.end_time }}</p>
+                                  </div>
+                              </div>
+                              <div class="col-md-8 border-right">
+                                  <div class="card-body">
+                                      <h4 class="card-title">{{ visit.name }}</h4>
+                                      <div class="card-text"><small class="card-text">{{ visit.date }}</small></div>
+                                      <div class="card-text">
+                                          <div>Dr. {{ visit.doctor.user.first_name }} {{ visit.doctor.user.last_name }}</div>
+                                      </div>
+                                  </div>
+                              </div>
+                              <div class="col-md-1 d-flex align-items-center">
+                                  <a href="{% url 'visit_detail' visit.id %}" class="btn btn-outline-light">...</a>
+                              </div>
+                          </div>
+                      </div>
+                    {% endif %}
+                  {%endfor%}
+                </div>
+              {% endfor %}
+                <div id="item-22">
+                  <div class="card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color: #004080; ">
+                    <div class="row g-0">
+                      <div class="col-md-3 border-right d-flex align-items-center ">
+                        <div class="col text-center">
+                          <div class="card-body">
+                            <h5>March 9, 2024</h5>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-9 border-right d-flex align-items-center "></div>
+                    </div>
+                  </div>
+                  <p>...</p>
+                  <p>...</p>
+                  <p>...</p>
+                  <p>...</p>
+                  <p>...</p>
+                  <p>...</p>
+                  <p>...</p>
+                  <p>...</p>
+                  <p>...</p>
+                  <p>...</p>
+                  <p>...</p>
+                </div>
+                <div id="item-33">
+                  <div class="card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color: #004080; ">
+                    <div class="row g-0">
+                      <div class="col-md-3 border-right d-flex align-items-center ">
+                        <div class="col text-center">
+                          <div class="card-body">
+                            <h5>March 10, 2024</h5>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-9 border-right d-flex align-items-center "></div>
+                    </div>
+                  </div>
+                  <p>...</p>
+                  <p>...</p>
+                  <p>...</p>
+                  <p>...</p>
+                  <p>...</p>
+                  <p>...</p>
+                  <p>...</p>
+                </div>
+              </div>
+        </div>
+      </div>
+    </div>
+
+    <!--History-->
+    <div class="col-md-5">
+<!--      HISTORY STICKY-->
+      <div class="container">
+        <div class="row">
+          <div class="col-md-6 text-center">
+              <div class="card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color: #004080; ">
+                  <div class="card-body">
+                    <h4 class="card-title">Upcoming Visits</h4>
+                  </div>
+            </div>
+          </div>
+          <div class="col-md-6 text-center">
+              <div class="card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color: #004080; ">
+                  <div class="card-body">
+                    <h4 class="card-title">Past Visits</h4>
+                  </div>
+            </div>
+          </div>
+        </div>
+      </div>
+<!--  HISTORY LIST    -->
+      <div class="container scrollable-history">
+            {% for upcoming, past in visits %}
+            <div class="row">
+              <div class="col-md-6 text-center">
+                {% if upcoming != null %}
+                  <div class="card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color: #004080; ">
+                    <div class="card-body">
+                      <h5 class="card-title">{{ upcoming.name }}</h5>
+                      <div class="card-text">
+                        <div>{{ upcoming.date }}</div>
+                        <p>{{ upcoming.start_time }} - {{ upcoming.end_time }}</p>
+                      </div>
+                      <a href="{% url 'visit_detail' upcoming.id %}" class="btn btn-outline-light">Detail</a>
+                    </div>
+                  </div>
+                {% endif %}
+              </div>
+              <div class="col-md-6 text-center">
+                {% if past != null%}
+                  <div class="card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color: #004080; ">
+                    <div class="card-body">
+                      <h5 class="card-title">{{ past.name }}</h5>
+                      <div class="card-text">
+                        <p>{{ past.date }}</p>
+                        <p>{{ past.start_time }} - {{ past.end_time }}</p>
+                      </div>
+                      <a href="{% url 'visit_detail' past.id %}" class="btn btn-outline-light">Detail</a>
+                    </div>
+                </div>
+                {% endif %}
+              </div>
+            </div>
+            {% endfor %}
+      </div>
+    </div>
+
+
+  </div>
+</div>
+{% endblock %}

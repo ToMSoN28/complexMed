@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<br />
+{% load static %}
+<script src="{% static 'js/visits.js' %}" defer></script>
+<div>{{ now }}</div>
+<ul>
+
+    {% for visit in visits %}
+        {% with visit_datetime=visit.date|date:'Y-m-d'|add:' '|add:visit.start_time|time:'H:i' %}
+            <div class="container-fluid">
+                <div class="card mb-3 text-white" style="max-width: 50vw; border-radius: 1rem;
+                 background-color: {% if visit.status == 'passed' %} #343a40;
+                              {% elif visit.status == 'free' %} #0d503c;
+                              {% else %} #664d03; {% endif %} ">
+                    <div class="row g-0">
+                        <div class="col-md-3 border-right d-flex align-items-center border-end">
+                            <div class="col text-center">
+                                <p>{{ visit.start_time }}</p>
+                                <br />
+                                <p>{{ visit.end_time }}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-8 border-right">
+                            <div class="card-body">
+                                <h4 class="card-title">{{ visit.name }}</h4>
+                                <p class="card-text"><small class="card-text">{{ visit.date }}</small></p>
+                                <div class="card-text">
+                                    <p>Dr. {{ visit.doctor.user.first_name }} {{ visit.doctor.user.last_name }}</p>
+                                    <p>Pat. {{ visit.patient.first_name }} {{ visit.patient.last_name }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-1 d-flex align-items-center">
+                            <a href="{% url 'visit_detail' visit.id %}" class="btn btn-outline-light">...</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endwith %}
+    {% endfor %}
+
+
+<!--    {% load static %}-->
+
+<!--    <script src="{% static 'js/visits.js' %}" defer></script>-->
+<!--    <button onclick="myFunction()">Click me!</button>-->
+
+<!--    <div id="visits-container"></div>-->
+
+<!--    <script>-->
+<!--        const visitsData = [-->
+<!--            {% for visit in visits %}-->
+<!--                {-->
+<!--                    start_time: '{{ visit.start_time }}',-->
+<!--                    end_time: '{{ visit.end_time }}',-->
+<!--                    name: '{{ visit.name }}',-->
+<!--                    date: '{{ visit.date }}',-->
+<!--                    doctor: {-->
+<!--                        user: {-->
+<!--                            first_name: '{{ visit.doctor.user.first_name }}',-->
+<!--                            last_name: '{{ visit.doctor.user.last_name }}'-->
+<!--                        }-->
+<!--                    },-->
+<!--                    patient: {% if visit.patient %} {-->
+<!--                        first_name: '{{ visit.patient.first_name }}',-->
+<!--                        last_name: '{{ visit.patient.last_name }}'-->
+<!--                    } {% else %} null {% endif %},-->
+<!--                    id: {{ visit.id }},-->
+<!--                },-->
+<!--                {% if not forloop.last %},{% endif %}-->
+<!--            {% endfor %}-->
+<!--        ];-->
+
+<!--        var jsNow = new Date();-->
+<!--        var jsFormattedDate = jsNow.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });-->
+<!--        var jsFormattedTime = jsNow.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });-->
+
+<!--        function-->
+<!--    </script>-->
+</ul>
+{% endblock %}

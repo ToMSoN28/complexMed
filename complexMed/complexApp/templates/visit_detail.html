@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<ul>
+
+    <a href="{% url 'visit_detail' visit.id %}">{{ visit.name }}</a>
+    <p>Date: {{ visit.date }}</p>
+    <p>Start Time: {{ visit.start_time }}</p>
+    <p>End Time: {{ visit.end_time }}</p>
+    <p>Doctor name: {{ visit.doctor.user.first_name }} {{ visit.doctor.user.last_name }}</p>
+    <p>Patient name: {{ visit.patient.first_name }} {{ visit.patient.last_name }}</p>
+</ul>
+
+<div class="container-fluid">
+  <div class="card mb-3 text-white" style="max-width: 75vw; border-radius: 1rem; background-color: #004080; ">
+    <div class="row g-0">
+      <div class="col-md-3 border-right d-flex align-items-center ">
+        <div class="col text-center">
+          <p>{{ visit.start_time }}</p>
+          <br />
+          <p>{{ visit.end_time }}</p>
+        </div>
+      </div>
+      <div class="col-md-7 border-right">
+        <div class="card-body">
+          <h4 class="card-title">{{ visit.name }}</h4>
+          <p class="card-text"><small class="card-text">{{ visit.date }}</small></p>
+          <div class="card-text">
+            <p>Dr. {{ visit.doctor.user.first_name }} {{ visit.doctor.user.last_name }}</p>
+            <p>Pat. {{ visit.patient.first_name }} {{ visit.patient.last_name }}</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-1 d-flex align-items-center">
+        {% if visit.patient is null %}
+            <a href="#" class="btn btn-outline-light">assign</a>
+        {% else %}
+          <a href="#" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#exampleModal">cancel</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="post" action="/visit/{{ visit.pk }}/cancel/">
+        {% csrf_token %}
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Cancellation Visit</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          if you want to cancel the appointment, enter the patient's NAME
+        </div>
+        <input type="text" id="inputFirstName" name="inputFirstName" class="form-control form-control-lg" />
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-warning" name="cancelBtnConfirm">Yes, cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
