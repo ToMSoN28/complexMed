@@ -86,24 +86,19 @@ class Visit(models.Model):
     date = models.DateField()
     start_time = models.TimeField()
     end_time = models.TimeField()
-    progress = models.TextField()
-    results = models.TextField()
+    description = models.TextField()
+    recommendation = models.TextField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
     room = models.CharField(max_length=50)
 
-    @classmethod
-    def cancel_visit(cls, visit_id):
-        try:
-            visit = cls.objects.get(pk=visit_id)
-            if visit.status == 'occupied':
-                visit.status = 'free'
-                visit.patient.visits.remove(visit)
-                visit.patient = None
-                visit.save()
-                return True
-            return False
-        except cls.DoesNotExist:
-            return False
+    def cancel_visit(self):
+        if self.status == 'occupied':
+            self.status = 'free'
+            self.patient.visits.remove(self)
+            self.patient = None
+            self.save()
+            return True
+        return False
 
     @classmethod
     def assign_patient(cls, visit_id, patient_id):
@@ -150,8 +145,8 @@ class Visit(models.Model):
 
     @classmethod
     def get_available_visits(cls, v_name, d_id, week):
-        print(v_name, d_id, week)
-        print(type(v_name), type(d_id), type(week))
+        # print(v_name, d_id, week)
+        # print(type(v_name), type(d_id), type(week))
         q_objects = Q(status='free')
         if int(v_name) != 0:
             q_objects &= Q(name__id=v_name)

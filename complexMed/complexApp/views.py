@@ -31,7 +31,9 @@ def login_view(request):
 @login_required
 def dashboard(request):
     worker = Worker.objects.get(user=request.user)
-    # Visit.assign_patient(8, 1)
+    # update_passed_visits()
+    Visit.cancel_visit(1)
+    Visit.assign_patient(1, 1)
     return render(request, 'dashboard.html', {'worker': worker})
 
 
@@ -58,6 +60,7 @@ def patient_detail(request, patient_id):
         patient = Patient.objects.get(pk=patient_id)
         past_visits = patient.get_past_visits()
         upcoming_visits = patient.get_upcoming_visits()
+        print(past_visits, upcoming_visits)
         visits = combination_visits_lists(upcoming_visits, past_visits)
         doctors = Worker.get_doctors()
         visits_names = VisitName.get_visits_names()
@@ -69,8 +72,8 @@ def patient_detail(request, patient_id):
             week = request.POST['selectWeek']
             available_visits = Visit.get_available_visits(visit_name, doctor, week)
             available_visits_info = get_visits_dates(available_visits)
-            print(available_visits)
-            print(available_visits_info)
+            # print(available_visits)
+            # print(available_visits_info)
 
 
         return render(request, 'patient_detail.html',
@@ -117,14 +120,10 @@ def visit_detail(request, visit_id):
 @login_required
 def cancel_visit(request, visit_id):
     worker = Worker.objects.get(user=request.user)
-    if request.method == 'POST':
-        name = request.POST['inputFirstName']
+    if request.method == 'POST' and worker.is_receptionist:
         try:
             visit = Visit.objects.get(pk=visit_id)
-            if visit.patient.first_name == name:
-                status = Visit.cancel_visit(visit_id)
-            else:
-                status = True
+            status = visit.cancel_visit()
             if status:
                 return redirect('visit_detail', visit_id=visit_id)
             else:
