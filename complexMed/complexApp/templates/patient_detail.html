@@ -119,14 +119,11 @@
                 <div id="item-{{ forloop.counter }}">
                   <div class="card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color: #004080; ">
                     <div class="row g-0">
-                      <div class="col-md-3 border-right d-flex align-items-center ">
-                        <div class="col text-center">
+                        <div class="col">
                           <div class="card-body">
                             <h5>{{ date.date|date:'l d F, Y' }}</h5>
                           </div>
                         </div>
-                      </div>
-                      <div class="col-md-9 border-right d-flex align-items-center "></div>
                     </div>
                   </div>
                   {% for visit in available %}
@@ -141,7 +138,7 @@
                                       <p>{{ visit.end_time }}</p>
                                   </div>
                               </div>
-                              <div class="col-md-8 border-right">
+                              <div class="col-md-7 border-right">
                                   <div class="card-body">
                                       <h4 class="card-title">{{ visit.name.name }}</h4>
                                       <div class="card-text"><small class="card-text">{{ visit.date }}</small></div>
@@ -150,10 +147,31 @@
                                       </div>
                                   </div>
                               </div>
-                              <div class="col-md-1 d-flex align-items-center">
-                                  <a href="{% url 'visit_detail' visit.id %}" class="btn btn-outline-light">...</a>
+                              <div class="col-md-2 d-flex align-items-center">
+                                  <a href="#" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#exampleModal{{ patient.id }}">assign</a>
                               </div>
                           </div>
+                      </div>
+                      <!--Confirm assigning-->
+                      <div class="modal fade" id="exampleModal{{ patient.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                          <div class="modal-content">
+                            <form method="post" action="/visit/{{ visit.pk }}/assign/patient/{{ patient.id }}/">
+                              {% csrf_token %}
+                              <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="exampleModalLabel{{ patient.id }}">Cancellation Visit</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                              </div>
+                              <div class="modal-body">
+                                Assign {{ patient.first_name }} {{ patient.last_name }} for {{ visit.name.name }}
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-success" name="cancelBtnConfirm">Yes, assign</button>
+                              </div>
+                            </form>
+                          </div>
+                        </div>
                       </div>
                     {% endif %}
                   {%endfor%}
@@ -212,7 +230,7 @@
 
     <!--History-->
     <div class="col-md-5">
-<!--      HISTORY STICKY-->
+      <!--HISTORY STICKY-->
       <div class="container">
         <div class="row">
           <div class="col-md-6 text-center">
@@ -231,7 +249,7 @@
           </div>
         </div>
       </div>
-<!--  HISTORY LIST    -->
+      <!--HISTORY LIST-->
       <div class="container scrollable-history">
             {% for upcoming, past in visits %}
             <div class="row">

@@ -4,10 +4,10 @@
 <br />
 <div class="container-fluid">
   <div class="card mb-3 text-white" style="max-width: 60vw; left: 20%; border-radius: 1rem; background-color: #004080; ">
+    <div class="card-header text-center">
+      <h2>{{ visit.name.name }}</h2>
+    </div>
     <div class="card-body text-center">
-      <div class="card-title">
-        <h2>{{ visit.name.name }}</h2>
-      </div>
       <div class="card-text">
         <h5>{{ visit.date|date:"l: d F, Y " }}&nbsp;&nbsp;&nbsp;&nbsp;{{ visit.start_time }} - {{ visit.end_time }}</h5>
         <br />
@@ -31,7 +31,10 @@
         </div>
         <br />
         {% if visit.status == "occupied"%}
-          <a href="#" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#exampleModal">cancel</a>
+          <a href="#" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal">Cancel</a>
+        {% endif %}
+        {% if visit.doctor.id == worker.id %}
+          <a href="#" class="btn btn-info">Report Visit</a>
         {% endif %}
       </div>
     </div>
@@ -39,6 +42,7 @@
 </div>
 <br />
 
+{% if worker.is_doctor %}
 <div class="container">
   <div class="row align-items-stretch">
     <div class="col-md-6">
@@ -79,6 +83,7 @@
     </div>
   </div>
 </div>
+{% endif %}
 
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog">

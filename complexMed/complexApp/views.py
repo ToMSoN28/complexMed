@@ -32,8 +32,8 @@ def login_view(request):
 def dashboard(request):
     worker = Worker.objects.get(user=request.user)
     # update_passed_visits()
-    Visit.cancel_visit(1)
-    Visit.assign_patient(1, 1)
+    # Visit.cancel_visit(1)
+    Visit.assign_patient(2, 1)
     return render(request, 'dashboard.html', {'worker': worker})
 
 
@@ -123,9 +123,10 @@ def cancel_visit(request, visit_id):
     if request.method == 'POST' and worker.is_receptionist:
         try:
             visit = Visit.objects.get(pk=visit_id)
+            patient_id= visit.patient.id
             status = visit.cancel_visit()
             if status:
-                return redirect('visit_detail', visit_id=visit_id)
+                return redirect('patient_detail', patient_id=patient_id)
             else:
                 return render(request, 'serverError.html')
         except Visit.DoesNotExist:
@@ -140,7 +141,7 @@ def assign_patient_to_visit_fun(request, visit_id, patient_id):
     if request.method == 'POST' and worker.is_receptionist:
         status = Visit.assign_patient(visit_id, patient_id)
         if status:
-            return redirect('visit_detail', visit_id=visit_id)
+            return redirect('patient_detail', patient_id=patient_id)
         else:
             return render(request, 'serverError.html')
     return redirect('logout')
