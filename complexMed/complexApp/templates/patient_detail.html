@@ -56,9 +56,9 @@
                   <label class="form-label" for="selectName">Name:</label>
                     <select id="selectName" name="selectName" class="form-select" style="width: 85%; margin: 0 auto;">
                         <!-- Dodaj opcje dla Nazwy -->
-                        <option value="option0">Choose Visit</option>
+                        <option value="0">Choose Visit</option>
                         {% for i in visits_names %}
-                        <option value="{{i.name}}">{{ i.name }}</option>
+                        <option value="{{i.id}}">{{ i.name }}</option>
                         {% endfor %}
                         <!-- ... -->
                     </select>
@@ -106,7 +106,7 @@
               <nav id="navbar-example3" class="h-100 flex-column align-items-stretch pe-4">
                 <nav class="nav nav-pills flex-row">
                   {% for date in available_info %}
-                    <a class="nav-link" href="#item-{{ forloop.counter }}">{{ date }}</a>
+                    <a class="nav-link" href="#item-{{ forloop.counter }}">{{ date.date|date:'F d' }}</a>
                   {% endfor %}
                   <a class="nav-link" href="#item-22">Item 2</a>
                   <a class="nav-link" href="#item-33">Item 3</a>
@@ -122,7 +122,7 @@
                       <div class="col-md-3 border-right d-flex align-items-center ">
                         <div class="col text-center">
                           <div class="card-body">
-                            <h5>{{ date }}</h5>
+                            <h5>{{ date.date|date:'F d, Y' }}</h5>
                           </div>
                         </div>
                       </div>
@@ -130,7 +130,7 @@
                     </div>
                   </div>
                   {% for visit in available %}
-                    {% if visit.date|date:'F d, Y' == date %}
+                    {% if visit.date == date.date %}
                       <div class="card mb-3 text-white" style="max-width: 50vw; border-radius: 1rem;
                        background-color: #0d503c;">
                           <div class="row g-0">
@@ -143,7 +143,7 @@
                               </div>
                               <div class="col-md-8 border-right">
                                   <div class="card-body">
-                                      <h4 class="card-title">{{ visit.name }}</h4>
+                                      <h4 class="card-title">{{ visit.name.name }}</h4>
                                       <div class="card-text"><small class="card-text">{{ visit.date }}</small></div>
                                       <div class="card-text">
                                           <div>Dr. {{ visit.doctor.user.first_name }} {{ visit.doctor.user.last_name }}</div>

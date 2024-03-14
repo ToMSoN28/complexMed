@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path, include
-from .views import (login_view, dashboard, logout_view, patient_registration, PatientDetailView, all_visits,
+from .views import (login_view, dashboard, logout_view, patient_registration, all_visits,
                     visit_detail, cancel_visit, assign_patient_to_visit, assign_patient_to_visit_fun,
                     patient_detail, patient_search)
 

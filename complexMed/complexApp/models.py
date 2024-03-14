@@ -63,6 +63,14 @@ class Patient(models.Model):
         return patient
 
 
+class VisitName(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+
+    @staticmethod
+    def get_visits_names():
+        return VisitName.objects.distinct()
+
+
 class Visit(models.Model):
     STATUS_CHOICES = [
         ('free', 'Free'),
@@ -74,7 +82,7 @@ class Visit(models.Model):
     doctor = models.ForeignKey(Worker, on_delete=models.CASCADE, limit_choices_to={'is_doctor': True})
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='free')
 
-    name = models.CharField(max_length=255)
+    name = models.ForeignKey(VisitName, on_delete=models.CASCADE)
     date = models.DateField()
     start_time = models.TimeField()
     end_time = models.TimeField()
@@ -139,16 +147,15 @@ class Visit(models.Model):
             self.status = 'passed'
             self.save()
 
-    @classmethod
-    def get_visits_names(cls):
-        return Visit.objects.values('name').distinct()
 
     @classmethod
     def get_available_visits(cls, v_name, d_id, week):
+        print(v_name, d_id, week)
+        print(type(v_name), type(d_id), type(week))
         q_objects = Q(status='free')
-        if v_name != 'option0':
-            q_objects &= Q(name=v_name)
-        if d_id != 0:
+        if int(v_name) != 0:
+            q_objects &= Q(name__id=v_name)
+        if int(d_id) != 0:
             q_objects &= Q(doctor__user__id=d_id)
 
         today = date.today()

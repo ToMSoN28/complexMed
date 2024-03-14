@@ -9,13 +9,8 @@ from django.contrib import messages
 from django.utils import timezone
 from django.views.generic.detail import DetailView
 
-from .models import Worker, Patient, Visit
+from .models import Worker, Patient, Visit, VisitName
 
-
-class PatientDetailView(DetailView):
-    model = Patient
-    template_name = 'patient_detail.html'
-    context_object_name = 'patient'
 
 
 def login_view(request):
@@ -65,7 +60,7 @@ def patient_detail(request, patient_id):
         upcoming_visits = patient.get_upcoming_visits()
         visits = combination_visits_lists(upcoming_visits, past_visits)
         doctors = Worker.get_doctors()
-        visits_names = Visit.get_visits_names()
+        visits_names = VisitName.get_visits_names()
         available_visits = []
         available_visits_info = []
         if request.method == 'POST':
@@ -223,5 +218,4 @@ def get_visits_dates(visit_list):
         .distinct()
         .order_by('date')
     )
-    result_data = [entry['date'].strftime('%B %d, %Y') for entry in unique_dates]
-    return result_data
+    return unique_dates
