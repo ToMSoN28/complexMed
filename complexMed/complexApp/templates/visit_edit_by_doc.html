@@ -64,6 +64,7 @@
       </div>
     </div>
 
+    {% if visit.status == "occupied"%}
     <div class="container-fluid">
       <div class="row justify-content-center">
         <div class="col-md-3">
@@ -77,6 +78,59 @@
         </div>
       </div>
     </div>
+    {% else %}
+    <div class="container-fluid">
+      <div class="row justify-content-center">
+        <div class="col-md-3">
+          <div class="card mb-3 text-white mx-auto" style="border-radius: 1rem; background-color: #004080; display: inline-flex;">
+            <div class="card-body text-center">
+              <a class="btn btn-success" data-bs-toggle="modal" data-bs-target="#save_continue" name="save_continue">Save & Continue</a>
+              &nbsp;&nbsp;
+              <a class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#save_exit" name="save_exit">Save & Exit</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!--Confirm s&c-->
+    <div class="modal fade" id="save_continue" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="save_continue_moda">Cancellation Visit</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              The visit will have passed. Are you sure you want to save your changes?
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-success" name="save_continue_confirm">Save & Continue</button>
+            </div>
+        </div>
+      </div>
+    </div>
+
+    <!--Confirm s&e-->
+    <div class="modal fade" id="save_exit" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="save_exit_moda">Cancellation Visit</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              The visit will have passed. Are you sure you want to save your changes?
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-success" name="save_exit_confirm">Save & Exit</button>
+            </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
   </div>
 </form>
 

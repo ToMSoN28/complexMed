@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<br />
+<div class="container-fluid">
+  <div class="row">
+    <!--PATIENT, SEARCH FORM AND VISITS LIST-->
+    <div class="col-md-7">
+        <!--PATIENT-->
+        <div class="card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color: #004080; ">
+          <div class="row g-0">
+            <div class="col-md-3 border-right d-flex align-items-center ">
+              <div class="col text-center">
+                <div class="card-body">
+                  <p>Full name:</p>
+                  <h5>{{ worker.user.first_name }} {{ worker.user.last_name }}</h5>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3 border-right d-flex align-items-center ">
+              <div class="col text-center">
+                <div class="card-body">
+                  <p>Birthday:</p>
+<!--                  <h6>{{ patient.birthday|date:"F j, Y" }}</h6>-->
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3 border-right d-flex align-items-center ">
+              <div class="col text-center">
+                <div class="card-body">
+                  <p>Pesel:</p>
+<!--                  <h6>{{ patient.pesel }}</h6>-->
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3 border-right d-flex align-items-center ">
+              <div class="col text-center">
+                <div class="card-body">
+                  <p>Phone:</p>
+<!--                  <h6>{{ patient.phone_number }}</h6>-->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <!--Actual/Next-->
+    <div class="col-md-5">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-6 text-center">
+              <div class="card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color: #004080; ">
+                  <div class="card-body">
+                    <h4 class="card-title">Actual Visit</h4>
+                  </div>
+            </div>
+          </div>
+          <div class="col-md-6 text-center">
+              <div class="card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color: #004080; ">
+                  <div class="card-body">
+                    <h4 class="card-title">Next Visit</h4>
+                  </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+
+      <!--HISTORY LIST-->
+      <div class="container">
+            <div class="row">
+              <div class="col-md-6 text-center">
+                  <div class="card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color: #004080; ">
+                    <div class="card-body">
+                      <h5 class="card-title">Today's Upcoming</h5>
+                    </div>
+                  </div>
+              </div>
+              <div class="col-md-6 text-center">
+                  <div class="card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color: #004080; ">
+                    <div class="card-body">
+                      <h5 class="card-title">Today's Passed</h5>
+                    </div>
+                </div>
+              </div>
+            </div>
+      </div>
+
+      <div class="container scrollable">
+            {% for upcoming, past in visits %}
+            <div class="row">
+              <div class="col-md-6 text-center">
+                {% if upcoming != null %}
+                  <div class="card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color: #004080; ">
+                    <div class="card-body">
+                      <h5 class="card-title">{{ upcoming.name.name }}</h5>
+                      <div class="card-text">
+                        <div>{{ upcoming.date }}</div>
+                        <p>{{ upcoming.start_time }} - {{ upcoming.end_time }}</p>
+                      </div>
+                      <a href="{% url 'visit_detail' upcoming.id %}" class="btn btn-outline-light">Detail</a>
+                    </div>
+                  </div>
+                {% endif %}
+              </div>
+              <div class="col-md-6 text-center">
+                {% if past != null%}
+                  <div class="card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color: #004080; ">
+                    <div class="card-body">
+                      <h5 class="card-title">{{ past.name.name }}</h5>
+                      <div class="card-text">
+                        <div>{{ past.date }}</div>
+                        <p>{{ past.start_time }} - {{ past.end_time }}</p>
+                      </div>
+                      <a href="{% url 'visit_detail' past.id %}" class="btn btn-outline-light">Detail</a>
+                    </div>
+                </div>
+                {% endif %}
+              </div>
+            </div>
+            {% endfor %}
+      </div>
+  </div>
+</div>
+{% endblock %}

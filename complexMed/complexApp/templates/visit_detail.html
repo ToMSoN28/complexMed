@@ -33,8 +33,11 @@
         {% if visit.status == "occupied"%}
           <a href="#" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal">Cancel</a>
         {% endif %}
-        {% if visit.doctor.id == worker.id %}
+        {% if visit.doctor.id == worker.id and visit.status == "in_process" %}
           <a href="{% url 'visit_edit_by_doc' visit.id %}" class="btn btn-info">Report Visit</a>
+        {% endif %}
+        {% if visit.doctor.id == worker.id and visit.status == "passed" %}
+          <a href="{% url 'visit_edit_by_doc' visit.id %}" class="btn btn-warning">Edit Report</a>
         {% endif %}
       </div>
     </div>
@@ -52,7 +55,7 @@
         </div>
         <div class="card-body" style="overflow-y: auto">
           <div class="card-text">
-            <h5>{{ visit.description|linebreaks }}</h5>
+            <h6>{{ visit.description|linebreaks }}</h6>
           </div>
         </div>
       </div>

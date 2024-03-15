@@ -33,7 +33,7 @@ def dashboard(request):
     worker = Worker.objects.get(user=request.user)
     # update_passed_visits()
     # Visit.cancel_visit(1)
-    Visit.assign_patient(2, 1)
+    # Visit.assign_patient(2, 1)
     return render(request, 'dashboard.html', {'worker': worker})
 
 
@@ -121,14 +121,14 @@ def visit_edit_by_doc(request, visit_id):
     worker = Worker.objects.get(user=request.user)
     try:
         visit = Visit.objects.get(pk=visit_id)
-        if visit.doctor.id != worker.id:
+        if visit.doctor.id != worker.id or visit.status in ['free', 'occupied']:
             return redirect('visit_detail', visit_id=visit_id)
 
         if request.method == 'POST':
             visit.description = request.POST.get('description')
             visit.recommendation = request.POST.get('recommendation')
             visit.save()
-            if 'save_exit' in request.POST:
+            if 'save_exit' in request.POST or 'save_exit_confirm' in request.POST:
                 return redirect('visit_detail', visit_id=visit_id)
 
         return render(request, 'visit_edit_by_doc.html', {'visit': visit, 'worker': worker})
@@ -189,31 +189,17 @@ def patient_registration(request):
 
 
 @login_required
-def assign_patient_to_visit(request, visit_id):
+def doc_dashboard(request):
     worker = Worker.objects.get(user=request.user)
-
-    try:
-        visit = Visit.objects.get(pk=visit_id)
-        if request.method == 'POST':
-            first = request.POST['inputFirstName']
-            last = request.POST['inputLastName']
-            pesel = request.POST['inputPesel']
-
-            q_objects = Q()
-            if first:
-                q_objects &= Q(first_name__icontains=first)
-            if last:
-                q_objects &= Q(last_name__icontains=last)
-            if pesel:
-                q_objects &= Q(pesel=pesel)
-
-            filtered_patients = Patient.objects.filter(q_objects)
-
-            return render(request, 'visit_assign.html',
-                          {'worker': worker, 'visit': visit, 'patients': filtered_patients})
-        return render(request, 'visit_assign.html', {'worker': worker, 'visit': visit})
-    except Visit.DoesNotExist:
-        return render(request, 'visit_not_found.html')
+    if True:
+        past_visits = worker.get_past_visits()
+        upcoming_visits = worker.get_upcoming_visits()
+        print(past_visits, upcoming_visits)
+        visits = combination_visits_lists(upcoming_visits, past_visits)
+        actual = worker.get_actual_visits()
+        # next = list(upcoming_visits)
+        # print(next)
+        return render(request, 'doc_dashboard.html', {'worker': worker, 'visits': visits })
 
 
 def update_passed_visits():

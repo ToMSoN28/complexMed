@@ -26,6 +26,18 @@ class Worker(models.Model):
     def get_doctors(cls):
         return Worker.objects.filter(is_doctor=True)
 
+    def get_past_visits(self):
+        today = timezone.now().date()
+        print(today)
+        return self.visits.filter(date=today, status='passed').order_by('-date', '-start_time')
+
+    def get_upcoming_visits(self):
+        today = timezone.now().date()
+        return self.visits.filter(date=today, status='occupied').order_by('date', 'start_time')
+
+    def get_actual_visits(self):
+        return self.visits.filter(status='in_proces').order_by('date', 'start_time').first()
+
 
 class Patient(models.Model):
     first_name = models.CharField(max_length=100)
@@ -76,6 +88,7 @@ class Visit(models.Model):
         ('free', 'Free'),
         ('occupied', 'Occupied'),
         ('passed', 'Passed'),
+        ('in_process', 'In_Process'),
     ]
 
     patient = models.ForeignKey(Patient, on_delete=models.SET_NULL, null=True, blank=True)
@@ -86,8 +99,8 @@ class Visit(models.Model):
     date = models.DateField()
     start_time = models.TimeField()
     end_time = models.TimeField()
-    description = models.TextField()
-    recommendation = models.TextField()
+    description = models.TextField(null=True, blank=True)
+    recommendation = models.TextField(null=True, blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     room = models.CharField(max_length=50)
 

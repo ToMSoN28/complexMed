@@ -148,12 +148,12 @@
                                   </div>
                               </div>
                               <div class="col-md-2 d-flex align-items-center">
-                                  <a href="#" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#exampleModal{{ patient.id }}">assign</a>
+                                  <a href="#" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#exampleModal{{ visit.id }}">assign</a>
                               </div>
                           </div>
                       </div>
                       <!--Confirm assigning-->
-                      <div class="modal fade" id="exampleModal{{ patient.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                      <div class="modal fade" id="exampleModal{{ visit.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                         <div class="modal-dialog">
                           <div class="modal-content">
                             <form method="post" action="/visit/{{ visit.pk }}/assign/patient/{{ patient.id }}/">
