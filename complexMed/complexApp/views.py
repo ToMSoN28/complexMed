@@ -116,6 +116,26 @@ def visit_detail(request, visit_id):
         # Handle the case where the visit does not exist
         return render(request, 'visit_not_found.html')
 
+@login_required
+def visit_edit_by_doc(request, visit_id):
+    worker = Worker.objects.get(user=request.user)
+    try:
+        visit = Visit.objects.get(pk=visit_id)
+        if visit.doctor.id != worker.id:
+            return redirect('visit_detail', visit_id=visit_id)
+
+        if request.method == 'POST':
+            visit.description = request.POST.get('description')
+            visit.recommendation = request.POST.get('recommendation')
+            visit.save()
+            if 'save_exit' in request.POST:
+                return redirect('visit_detail', visit_id=visit_id)
+
+        return render(request, 'visit_edit_by_doc.html', {'visit': visit, 'worker': worker})
+    except Visit.DoesNotExist:
+        # Handle the case where the visit does not exist
+        return render(request, 'visit_not_found.html')
+
 
 @login_required
 def cancel_visit(request, visit_id):

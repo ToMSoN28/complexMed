@@ -55,7 +55,7 @@
                 <div class="col text-center">
                   <label class="form-label" for="selectName">Name:</label>
                     <select id="selectName" name="selectName" class="form-select" style="width: 85%; margin: 0 auto;">
-                        <!-- Dodaj opcje dla Nazwy -->
+                        <!-- Name option -->
                         <option value="0">Choose Visit</option>
                         {% for i in visits_names %}
                         <option value="{{i.id}}">{{ i.name }}</option>
@@ -69,7 +69,7 @@
                 <div class="col text-center">
                   <label class="form-label" for="selectDoctor">Doctor:</label>
                     <select id="selectDoctor" name="selectDoctor" class="form-select" style="width: 85%; margin: 0 auto;">
-                        <!-- Dodaj opcje dla Lekarza -->
+                        <!-- doc option -->
                         <option value="0">Choose doctor</option>
                         {% for doc in doctors %}
                         <option value="{{ doc.user.id }}">{{ doc.user.first_name }} {{ doc.user.last_name }}</option>
@@ -83,7 +83,7 @@
                 <div class="col text-center">
                   <label class="form-label" for="selectWeek">Week:</label>
                     <select id="selectWeek" name="selectWeek" class="form-select" style="width: 85%; margin: 0 auto;">
-                        <!-- Dodaj opcje dla Dnia Tygodnia -->
+                        <!-- week option -->
                         <option value="this">This week</option>
                         <option value="next">Next week</option>
                         <option value="inTwo">In two weeks</option>

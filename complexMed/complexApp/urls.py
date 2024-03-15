@@ -3,7 +3,7 @@ from django.conf.urls.static import static
 from django.urls import path, include
 from .views import (login_view, dashboard, logout_view, patient_registration, all_visits,
                     visit_detail, cancel_visit, assign_patient_to_visit, assign_patient_to_visit_fun,
-                    patient_detail, patient_search)
+                    patient_detail, patient_search, visit_edit_by_doc)
 
 
 urlpatterns = [
@@ -16,6 +16,7 @@ urlpatterns = [
     path('visits/', all_visits, name='all_visits'),
     path('visit/<int:visit_id>/', visit_detail, name='visit_detail'),
     path('visit/<int:visit_id>/cancel/', cancel_visit, name='cancel_visit'),
+    path('visit/<int:visit_id>/doctor/edit', visit_edit_by_doc, name='visit_edit_by_doc'),
     path('visit/<int:visit_id>/assign/patient/<int:patient_id>/', assign_patient_to_visit_fun, name='assign_patient_to_visit_fun'),
 ]
 

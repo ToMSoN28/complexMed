@@ -34,7 +34,7 @@
           <a href="#" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal">Cancel</a>
         {% endif %}
         {% if visit.doctor.id == worker.id %}
-          <a href="#" class="btn btn-info">Report Visit</a>
+          <a href="{% url 'visit_edit_by_doc' visit.id %}" class="btn btn-info">Report Visit</a>
         {% endif %}
       </div>
     </div>
@@ -46,37 +46,26 @@
 <div class="container">
   <div class="row align-items-stretch">
     <div class="col-md-6">
-      <div class="card mb-3 text-white" style="width: 90%; height: 300px; border-radius: 1rem; background-color: #004080; ">
+      <div class="card mb-3 text-white" style="width: 100%; height: 300px; border-radius: 1rem; background-color: #004080; ">
         <div class="card-header text-center">
           <h3>Description</h3>
         </div>
         <div class="card-body" style="overflow-y: auto">
           <div class="card-text">
-            <h5>{{ visit.description }}</h5>
-            <p>...1111111111111111111111111 11111111111111111111111 22222222223 333333333333333333 333334 4444444444444444444      5 5555555555555555   666666677777 77777777777</p>
-            <p>...</p>
-            <p>...</p>
-
+            <h5>{{ visit.description|linebreaks }}</h5>
           </div>
         </div>
       </div>
     </div>
 
     <div class="col-md-6">
-      <div class="card mb-3 text-white" style="width: 90%; height: 300px; left: 10%; border-radius: 1rem; background-color: #004080; ">
+      <div class="card mb-3 text-white" style="width: 100%; height: 300px; border-radius: 1rem; background-color: #004080; ">
         <div class="card-header text-center">
           <h3>Recommendation</h3>
         </div>
         <div class="card-body" style="overflow-y: auto">
           <div class="card-text">
-            <h5>{{ visit.recommendation }}</h5>
-            <p>...</p>
-            <p>...</p>
-            <p>...1111111111111111111111111 11111111111111111111111 22222222223 333333333333333333 333334 4444444444444444444      5 5555555555555555   666666677777 77777777777</p>
-            <p>...</p>
-            <p>...</p>
-            <p>...</p>
-            <p>...</p>
+            <h6>{{ visit.recommendation|linebreaks }}</h6>
           </div>
         </div>
       </div>
