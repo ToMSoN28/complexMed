@@ -32,6 +32,11 @@
         overflow: auto;
       }
 
+      .scrollable-today {
+        height: 60vh;
+        overflow: auto;
+      }
+
       .scrollable-history {
         height: 75vh;
         overflow: auto;
@@ -58,7 +63,7 @@
         </li>
         {% if worker.is_doctor %}
         <li class="nav-item">
-          <a class="nav-link" href="#">Upcoming Visits</a>
+          <a class="nav-link" href="{% url 'doc_dashboard' %}">Daily Visits</a>
         </li>
         {% endif %}
         {% if worker.is_receptionist %}

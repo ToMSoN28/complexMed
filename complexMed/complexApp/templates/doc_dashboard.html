@@ -6,39 +6,26 @@
 <div class="container-fluid">
   <div class="row">
     <!--PATIENT, SEARCH FORM AND VISITS LIST-->
-    <div class="col-md-7">
-        <!--PATIENT-->
+    <div class="col-md-5">
+        <!--Doctor-->
         <div class="card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color: #004080; ">
+          <div class="card-header text-center">
+            <h4>Daily dashboard</h4>
+          </div>
           <div class="row g-0">
-            <div class="col-md-3 border-right d-flex align-items-center ">
+            <div class="col-md-6 border-right d-flex align-items-center ">
               <div class="col text-center">
                 <div class="card-body">
-                  <p>Full name:</p>
-                  <h5>{{ worker.user.first_name }} {{ worker.user.last_name }}</h5>
+                  <br />
+                  <h5>{{ now|date:"F d, Y" }}</h5>
                 </div>
               </div>
             </div>
-            <div class="col-md-3 border-right d-flex align-items-center ">
+            <div class="col-md-6 border-right d-flex align-items-center ">
               <div class="col text-center">
                 <div class="card-body">
-                  <p>Birthday:</p>
-<!--                  <h6>{{ patient.birthday|date:"F j, Y" }}</h6>-->
-                </div>
-              </div>
-            </div>
-            <div class="col-md-3 border-right d-flex align-items-center ">
-              <div class="col text-center">
-                <div class="card-body">
-                  <p>Pesel:</p>
-<!--                  <h6>{{ patient.pesel }}</h6>-->
-                </div>
-              </div>
-            </div>
-            <div class="col-md-3 border-right d-flex align-items-center ">
-              <div class="col text-center">
-                <div class="card-body">
-                  <p>Phone:</p>
-<!--                  <h6>{{ patient.phone_number }}</h6>-->
+                  <br />
+                  <h5>Last refresh: {{ now|time:"H:i" }}</h5>
                 </div>
               </div>
             </div>
@@ -47,83 +34,144 @@
     </div>
 
     <!--Actual/Next-->
-    <div class="col-md-5">
+    <div class="col-md-7">
       <div class="container">
-        <div class="row">
-          <div class="col-md-6 text-center">
-              <div class="card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color: #004080; ">
-                  <div class="card-body">
-                    <h4 class="card-title">Actual Visit</h4>
-                  </div>
+        <div class="card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color:  #AAA222;">
+          <div class="card-header text-center">
+            <h4>Actual visit</h4>
+          </div>
+          {% if actual != null %}
+          <div class="row g-0">
+            <div class="col-md-5 border-right d-flex align-items-center">
+              <div class="col text-center">
+                <h4>{{ actual.name.name }}</h4>
+                <h6>{{ actual.start_time|time:"H:i" }} - {{ actual.end_time|time:"H:i" }}</h6>
+              </div>
+            </div>
+            <div class="col-md-5 border-right">
+              <div class="card-body">
+                <div class="card-text">
+                  <h6>room: {{ actual.room }}</h6>
+                  <h6>Patient: {{ actual.patient.first_name }} {{ actual.patient.last_name }} {{ upcoming.date }}</h6>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-2 d-flex align-items-center">
+              <a href="{% url 'visit_detail' actual.id %}" class="btn btn-outline-light">Detail</a>
             </div>
           </div>
-          <div class="col-md-6 text-center">
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+    <br />
+
+      <!--Today's visits-->
+  <div class="container">
+      <div class="row">
+        <div class="col-md-6 text-center">
+          <div class="row">
+            <div class="col-md-1 text-center"></div>
+            <div class="col-md-10 text-center">
               <div class="card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color: #004080; ">
-                  <div class="card-body">
-                    <h4 class="card-title">Next Visit</h4>
-                  </div>
+                <div class="card-body">
+                  <h5 class="card-title">Today's upcoming visits</h5>
+                </div>
+              </div>
             </div>
+            <div class="col-md-1 text-center"></div>
+          </div>
+        </div>
+        <div class="col-md-6 text-center">
+          <div class="row">
+            <div class="col-md-1 text-center"></div>
+            <div class="col-md-10 text-center">
+              <div class="card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color: #004080; ">
+                <div class="card-body">
+                  <h5 class="card-title">Today's passed visits</h5>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-1 text-center"></div>
           </div>
         </div>
       </div>
-
     </div>
 
-
-      <!--HISTORY LIST-->
-      <div class="container">
+  <div class="container scrollable-today">
+        {% for upcoming, past in visits %}
+        <div class="row">
+          <div class="col-md-6">
             <div class="row">
-              <div class="col-md-6 text-center">
-                  <div class="card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color: #004080; ">
-                    <div class="card-body">
-                      <h5 class="card-title">Today's Upcoming</h5>
-                    </div>
-                  </div>
-              </div>
-              <div class="col-md-6 text-center">
-                  <div class="card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color: #004080; ">
-                    <div class="card-body">
-                      <h5 class="card-title">Today's Passed</h5>
-                    </div>
-                </div>
-              </div>
-            </div>
-      </div>
-
-      <div class="container scrollable">
-            {% for upcoming, past in visits %}
-            <div class="row">
-              <div class="col-md-6 text-center">
+              <div class="col-1"></div>
+              <div class="col-10">
                 {% if upcoming != null %}
-                  <div class="card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color: #004080; ">
-                    <div class="card-body">
-                      <h5 class="card-title">{{ upcoming.name.name }}</h5>
-                      <div class="card-text">
-                        <div>{{ upcoming.date }}</div>
-                        <p>{{ upcoming.start_time }} - {{ upcoming.end_time }}</p>
+                <div class="card mb-3 text-white" style="max-width: 50vw; border-radius: 1rem;
+                     background-color: {% if upcoming.status == 'passed' %} #343a40;
+                                  {% elif upcoming.status == 'free' %} #0d503c;
+                                  {% else %} #664d03; {% endif %} ">
+                  <div class="row g-0">
+                    <div class="col-md-2 border-right d-flex align-items-center border-end">
+                      <div class="col text-center">
+                        <h6>{{ upcoming.start_time|time:"H:i" }}</h6>
+                        <h6>{{ upcoming.end_time|time:"H:i" }}</h6>
                       </div>
+                    </div>
+                    <div class="col-md-8 border-right">
+                      <div class="card-body">
+                        <h4 class="card-title">{{ upcoming.name.name }}</h4>
+                        <div class="card-text">
+                          <h6>Patient: {{ upcoming.patient.first_name }} {{ upcoming.patient.last_name }} {{ upcoming.date }}</h6>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-center">
                       <a href="{% url 'visit_detail' upcoming.id %}" class="btn btn-outline-light">Detail</a>
                     </div>
                   </div>
-                {% endif %}
-              </div>
-              <div class="col-md-6 text-center">
-                {% if past != null%}
-                  <div class="card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color: #004080; ">
-                    <div class="card-body">
-                      <h5 class="card-title">{{ past.name.name }}</h5>
-                      <div class="card-text">
-                        <div>{{ past.date }}</div>
-                        <p>{{ past.start_time }} - {{ past.end_time }}</p>
-                      </div>
-                      <a href="{% url 'visit_detail' past.id %}" class="btn btn-outline-light">Detail</a>
-                    </div>
                 </div>
                 {% endif %}
               </div>
+              <div class="col-1 text-center"></div>
             </div>
-            {% endfor %}
+          </div>
+          <div class="col-md-6 text-center">
+            <div class="row">
+              <div class="col-md-1 text-center"></div>
+              <div class="col-md-10">
+                {% if past != null%}
+                <div class="card mb-3 text-white" style="max-width: 50vw; border-radius: 1rem;
+                     background-color: {% if past.status == 'passed' %} #343a40;
+                                  {% elif past.status == 'free' %} #0d503c;
+                                  {% else %} #664d03; {% endif %} ">
+                  <div class="row g-0">
+                    <div class="col-md-2 border-right d-flex align-items-center border-end">
+                      <div class="col text-center">
+                        <h6>{{ past.start_time|time:"H:i" }}</h6>
+                        <h6>{{ past.end_time|time:"H:i" }}</h6>
+                      </div>
+                    </div>
+                    <div class="col-md-8 border-right">
+                      <div class="card-body">
+                        <h4 class="card-title">{{ past.name.name }}</h4>
+                        <div class="card-text">
+                          <h6>Patient: {{ past.patient.first_name }} {{ past.patient.last_name }}</h6>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-center">
+                      <a href="{% url 'visit_detail' past.id %}" class="btn btn-outline-light">Detail</a>
+                    </div>
+                  </div>
+                </div>
+                {% endif %}
+              </div>
+              <div class="col-md-1 text-center"></div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
       </div>
-  </div>
 </div>
 {% endblock %}

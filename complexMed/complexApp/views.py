@@ -47,7 +47,7 @@ def logout_view(request):
 def all_visits(request):
     worker = Worker.objects.get(user=request.user)
     visits = Visit.objects.all()
-    update_passed_visits()
+    # update_passed_visits()
     now = datetime.now()
     return render(request, 'all_visits.html',
                   {'visits': visits, 'worker': worker, 'today': now.strftime('%B %d, %Y'), 'now': timezone.now()})
@@ -197,9 +197,10 @@ def doc_dashboard(request):
         print(past_visits, upcoming_visits)
         visits = combination_visits_lists(upcoming_visits, past_visits)
         actual = worker.get_actual_visits()
+        now = datetime.now()
         # next = list(upcoming_visits)
         # print(next)
-        return render(request, 'doc_dashboard.html', {'worker': worker, 'visits': visits })
+        return render(request, 'doc_dashboard.html', {'worker': worker, 'visits': visits, 'actual': actual, 'now': now })
 
 
 def update_passed_visits():

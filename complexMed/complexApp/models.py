@@ -36,7 +36,7 @@ class Worker(models.Model):
         return self.visits.filter(date=today, status='occupied').order_by('date', 'start_time')
 
     def get_actual_visits(self):
-        return self.visits.filter(status='in_proces').order_by('date', 'start_time').first()
+        return self.visits.filter(status='in_process').order_by('date', 'start_time').first()
 
 
 class Patient(models.Model):
