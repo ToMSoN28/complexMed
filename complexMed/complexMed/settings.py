@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'complexApp',
     'allauth',
     'allauth.account',
+    'django_crontab',
 ]
 
 MIDDLEWARE = [
@@ -137,3 +138,6 @@ AUTHENTICATION_BACKENDS = [
 
 LOGIN_URL = 'login'
 
+CRONJOBS = [
+    ('*/5 * * * *', 'complexApp.tasks.update_status_cron'),
+]
