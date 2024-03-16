@@ -33,7 +33,7 @@ class Worker(models.Model):
 
     def get_upcoming_visits(self):
         today = timezone.now().date()
-        return self.visits.filter(date=today, status='occupied').order_by('date', 'start_time')
+        return self.visits.filter(Q(date=today, status='occupied') | Q(date=today, status='free')).order_by('date', 'start_time')
 
     def get_actual_visits(self):
         return self.visits.filter(status='in_process').order_by('date', 'start_time').first()
