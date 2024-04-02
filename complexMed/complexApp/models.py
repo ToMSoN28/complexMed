@@ -33,7 +33,8 @@ class Worker(models.Model):
 
     def get_upcoming_visits(self):
         today = timezone.now().date()
-        return self.visits.filter(Q(date=today, status='occupied') | Q(date=today, status='free')).order_by('date', 'start_time')
+        return self.visits.filter(Q(date=today, status='occupied') | Q(date=today, status='free')).order_by('date',
+                                                                                                            'start_time')
 
     def get_actual_visits(self):
         return self.visits.filter(status='in_process').order_by('date', 'start_time').first()
@@ -78,6 +79,14 @@ class Patient(models.Model):
 class VisitName(models.Model):
     name = models.CharField(max_length=255, unique=True)
 
+    @classmethod
+    def create_visit_name(cls, name):
+        if not cls.objects.filter(name=name).exists():
+            v_name = cls(name=name)
+            v_name.save()
+        else:
+            print('This name already exist')
+
     @staticmethod
     def get_visits_names():
         return VisitName.objects.distinct()
@@ -103,6 +112,17 @@ class Visit(models.Model):
     recommendation = models.TextField(null=True, blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     room = models.CharField(max_length=50)
+
+    @classmethod
+    def create_visit(cls, doc_id, name_id, date, start, end, price, room):
+        if True:  # dodac czy wtedy ten lekarz jest wolny
+            visit = cls(doctor=doc_id, name=name_id, date=date, start_time=start, end_time=end, price=price, room=room)
+            visit.save()
+        else:
+            print('termin zajęty, zwrócić wizytę która blokuje?')
+
+    def delete_visit(self):
+        self.delete()
 
     def cancel_visit(self):
         if self.status == 'occupied':
@@ -154,7 +174,6 @@ class Visit(models.Model):
         if visit_datetime_aware < current_datetime:
             self.status = 'passed'
             self.save()
-
 
     @classmethod
     def get_available_visits(cls, v_name, d_id, week):

@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<br />
+<div class="container-fluid">
+    <div class="row">
+    <!--    schedule-->
+        <div class="col-md-8">
+
+        </div>
+
+    <!--    add single-->
+        <div class="col-md-4">
+    <!--        add visit name-->
+            <div class="row">
+                <div class="col-md-1"></div>
+                <div class="col-md-10">
+                    <div class="card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color: #004080; ">
+                        <div class="card-body text-center">
+                          <h5>Add visit name</h5>
+                          <form action="/visit-name/add" method="post">
+                              {% csrf_token %}
+                              <div class="row" style="margin-bottom: 10px;">
+                                  <div class="col-md-1"></div>
+                                  <div class="col-md-10">
+                                      <input type="text" id="visit_name" name="visit_name" class="form-control">
+                                  </div>
+                              </div>
+                              <button type="submit" class="btn btn-success" name="addName">Add</button>
+                          </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br />
+
+    <!--        add new visit-->
+            <div class="row">
+                <div class="col-md-1"></div>
+                <div class="col-md-10">
+                    <div class="card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color: #004080; ">
+                        <div class="card-body text-center">
+                          <h5>Add new visit</h5>
+                          <form action="/visit-name/add" method="post">
+                              {% csrf_token %}
+                              <div class="row" style="display: flex; align-items: center; margin-bottom: 10px;">
+                                  <div class="col-md-3">
+                                      <div class="form-label" for="selectName">Name:</div>
+                                  </div>
+                                  <div class="col-md-8">
+                                      <select id="selectName" name="selectName" class="form-select" style="margin: 0 auto;">
+                                          <option value="0">Choose Visit</option>
+                                          {% for i in visits_names %}
+                                          <option value="{{i.id}}">{{ i.name }}</option>
+                                          {% endfor %}
+                                      </select>
+                                  </div>
+                              </div>
+                              <div class="row" style="display: flex; align-items: center; margin-bottom: 10px;">
+                                  <div class="col-md-3">
+                                      <div class="form-label" for="selectDoctor">Doctor:</div>
+                                  </div>
+                                  <div class="col-md-8">
+                                      <select id="selectDoctor" name="selectDoctor" class="form-select" style="margin: 3 ;">
+                                        <!-- doc option -->
+                                        <option value="0">Choose doctor</option>
+                                        {% for doc in doctors %}
+                                        <option value="{{ doc.user.id }}">{{ doc.user.first_name }} {{ doc.user.last_name }}</option>
+                                        {% endfor %}
+                                        <!-- ... -->
+                                      </select>
+                                  </div>
+                              </div>
+                              <div class="row" style="display: flex; align-items: center; margin-bottom: 10px;">
+                                  <div class="col-md-3">
+                                      <label class="form-label" for="selectDate">Date:</label>
+                                  </div>
+                                  <div class="col-md-8">
+                                      <input type="date" id="selectDate" name="selectDate" class="form-control">
+                                  </div>
+                              </div>
+                              <div class="row" style="display: flex; align-items: center; margin-bottom: 10px;">
+                                  <div class="col-md-3">
+                                      <label class="form-label" for="selectStart">Start time:</label>
+                                  </div>
+                                  <div class="col-md-8">
+                                      <input type="time" id="selectStart" name="SelectStart" class="form-control">
+                                  </div>
+                              </div>
+                              <div class="row" style="display: flex; align-items: center; margin-bottom: 10px;">
+                                  <div class="col-md-3">
+                                      <label class="form-label" for="selectEnd">End time:</label>
+                                  </div>
+                                  <div class="col-md-8">
+                                      <input type="time" id="selectEnd" name="SelectEnd" class="form-control">
+                                  </div>
+                              </div>
+                              <div class="row" style="display: flex; align-items: center; margin-bottom: 10px;">
+                                  <div class="col-md-3">
+                                      <label class="form-label" for="room">Room:</label>
+                                  </div>
+                                  <div class="col-md-8">
+                                      <input type="number" id="room" name="room" min="1" max="12" class="form-control">
+                                  </div>
+                              </div>
+                              <div class="row" style="display: flex; align-items: center; margin-bottom: 10px;">
+                                  <div class="col-md-3">
+                                      <label class="form-label" for="price">Price:</label>
+                                  </div>
+                                  <div class="col-md-8">
+                                      <input type="number" id="price" name="price" min="0" step="20" class="form-control">
+                                  </div>
+                              </div>
+                              <button type="submit" class="btn btn-success" name="addName">Add</button>
+                          </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+    </div>
+</div>
+
+
+
+
+
+{% endblock %}

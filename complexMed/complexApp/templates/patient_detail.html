@@ -46,6 +46,7 @@
           </div>
         </div>
 
+        {% if worker.is_receptionist %}
         <!--SEARCH FORM-->
         <div class="card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color: #004080; ">
           <div class="row g-0">
@@ -108,8 +109,6 @@
                   {% for date in available_info %}
                     <a class="nav-link" href="#item-{{ forloop.counter }}">{{ date.date|date:'F d' }}</a>
                   {% endfor %}
-                  <a class="nav-link" href="#item-22">Item 2</a>
-                  <a class="nav-link" href="#item-33">Item 3</a>
                 </nav>
                 <br />
               </nav>
@@ -177,54 +176,9 @@
                   {%endfor%}
                 </div>
               {% endfor %}
-                <div id="item-22">
-                  <div class="card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color: #004080; ">
-                    <div class="row g-0">
-                      <div class="col-md-3 border-right d-flex align-items-center ">
-                        <div class="col text-center">
-                          <div class="card-body">
-                            <h5>March 9, 2024</h5>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="col-md-9 border-right d-flex align-items-center "></div>
-                    </div>
-                  </div>
-                  <p>...</p>
-                  <p>...</p>
-                  <p>...</p>
-                  <p>...</p>
-                  <p>...</p>
-                  <p>...</p>
-                  <p>...</p>
-                  <p>...</p>
-                  <p>...</p>
-                  <p>...</p>
-                  <p>...</p>
-                </div>
-                <div id="item-33">
-                  <div class="card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color: #004080; ">
-                    <div class="row g-0">
-                      <div class="col-md-3 border-right d-flex align-items-center ">
-                        <div class="col text-center">
-                          <div class="card-body">
-                            <h5>March 10, 2024</h5>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="col-md-9 border-right d-flex align-items-center "></div>
-                    </div>
-                  </div>
-                  <p>...</p>
-                  <p>...</p>
-                  <p>...</p>
-                  <p>...</p>
-                  <p>...</p>
-                  <p>...</p>
-                  <p>...</p>
-                </div>
               </div>
         </div>
+        {% endif %}
       </div>
     </div>
 
@@ -260,7 +214,8 @@
                       <h5 class="card-title">{{ upcoming.name.name }}</h5>
                       <div class="card-text">
                         <div>{{ upcoming.date }}</div>
-                        <p>{{ upcoming.start_time }} - {{ upcoming.end_time }}</p>
+                        <div>{{ upcoming.start_time }} - {{ upcoming.end_time }}</div>
+                        <p>Doc. {{ upcoming.doctor.user.first_name }} {{ upcoming.doctor.user.last_name }}</p>
                       </div>
                       <a href="{% url 'visit_detail' upcoming.id %}" class="btn btn-outline-light">Detail</a>
                     </div>
@@ -274,7 +229,8 @@
                       <h5 class="card-title">{{ past.name.name }}</h5>
                       <div class="card-text">
                         <div>{{ past.date }}</div>
-                        <p>{{ past.start_time }} - {{ past.end_time }}</p>
+                        <div>{{ past.start_time }} - {{ past.end_time }}</div>
+                        <p>Doc. {{ upcoming.doctor.user.first_name }} {{ upcoming.doctor.user.last_name }}</p>
                       </div>
                       <a href="{% url 'visit_detail' past.id %}" class="btn btn-outline-light">Detail</a>
                     </div>

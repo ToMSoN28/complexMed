@@ -143,7 +143,7 @@ def cancel_visit(request, visit_id):
     if request.method == 'POST' and worker.is_receptionist:
         try:
             visit = Visit.objects.get(pk=visit_id)
-            patient_id= visit.patient.id
+            patient_id = visit.patient.id
             status = visit.cancel_visit()
             if status:
                 return redirect('patient_detail', patient_id=patient_id)
@@ -153,6 +153,34 @@ def cancel_visit(request, visit_id):
             # Handle the case where the visit does not exist
             return render(request, 'visit_not_found.html')
     return redirect('logout')
+
+
+@login_required
+def crate_visit_name(request):
+    worker = Worker.objects.get(user=request.user)
+    if worker.is_manager and request.method == 'POST':
+        name = request.POST['visit_name']
+        VisitName.create_visit_name(name)
+        return redirect('create_schedule')
+    return redirect('logout')
+
+
+@login_required
+def create_visit(request):
+    worker = Worker.objects.get(user=request.user)
+    if worker.is_manager and request.method == 'POST':
+        doc_id = request.POST['doc_id']
+        name_id = request.POST['name_id']
+        date = request.POST['date']
+        start = request.POST['start']
+        end = request.POST['end']
+        price = request.POST['price']
+        room = request.POST['room']
+
+        Visit.create_visit(doc_id, name_id, date, start, end, price, room)
+        return redirect('create_schedule')
+    return redirect('logout')
+
 
 
 @login_required
@@ -201,6 +229,28 @@ def doc_dashboard(request):
         # next = list(upcoming_visits)
         # print(next)
         return render(request, 'doc_dashboard.html', {'worker': worker, 'visits': visits, 'actual': actual, 'now': now })
+
+@login_required
+def add_visit_name(request):
+    worker = Worker.objects.get(user=request.user)
+    if request.method == 'POST' and worker.is_manager:
+        name = request.POST['visit_name']
+        # doctor
+        # week
+        print(name)
+        VisitName.create_visit_name(name)
+        return redirect('manager_dashboard')
+    return redirect('logout')
+
+def manager_dashboard(request):
+    worker = Worker.objects.get(user=request.user)
+    if worker.is_manager:
+        doctors = Worker.get_doctors()
+        return render(request, 'manager_dashboard.html', {'worker': worker})
+    return redirect('logout')
+
+
+
 
 
 def update_passed_visits():
