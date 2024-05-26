@@ -14,17 +14,27 @@ class Worker(models.Model):
     visits = models.ManyToManyField('Visit', related_name='doctor_visits', blank=True)
 
     @classmethod
+    def username_valid(cls, username):
+        return not User.objects.filter(username=username).exists()
+
+    @classmethod
+    def get_name(cls, doc_id):
+        worker = Worker.objects.get(user_id=doc_id)
+        return worker.user.first_name + " " + worker.user.last_name
+
+    @classmethod
     def create_worker(cls, username, password, email, first_name, last_name,
                       is_doctor=False, is_receptionist=False, is_manager=False):
         user = User.objects.create_user(username=username, password=password,
                                         email=email, first_name=first_name, last_name=last_name)
         worker = cls(user=user, is_doctor=is_doctor, is_receptionist=is_receptionist, is_manager=is_manager)
+        user.save()
         worker.save()
         return worker
 
     @classmethod
     def get_doctors(cls):
-        return Worker.objects.filter(is_doctor=True)
+        return not Worker.objects.filter(is_doctor=True)
 
     def get_past_visits(self):
         today = timezone.now().date()
@@ -81,11 +91,11 @@ class VisitName(models.Model):
 
     @classmethod
     def create_visit_name(cls, name):
-        if not cls.objects.filter(name=name).exists():
+        if not cls.objects.filter(name=name).exists() and len(name) != 0:
             v_name = cls(name=name)
             v_name.save()
         else:
-            print('This name already exist')
+            print('This name already exist of len 0')
 
     @staticmethod
     def get_visits_names():
@@ -115,8 +125,11 @@ class Visit(models.Model):
 
     @classmethod
     def create_visit(cls, doc_id, name_id, date, start, end, price, room):
+        doc = Worker.objects.get(pk=doc_id)
+        name = VisitName.objects.get(pk=name_id)
         if True:  # dodac czy wtedy ten lekarz jest wolny
-            visit = cls(doctor=doc_id, name=name_id, date=date, start_time=start, end_time=end, price=price, room=room)
+            # błędy o przeminiętej dodanej
+            visit = cls(doctor=doc, name=name, date=date, start_time=start, end_time=end, price=price, room=room)
             visit.save()
         else:
             print('termin zajęty, zwrócić wizytę która blokuje?')
@@ -196,3 +209,9 @@ class Visit(models.Model):
         q_objects &= date_filter
 
         return Visit.objects.filter(q_objects).order_by('date', 'start_time')
+
+    @classmethod
+    def gat_all_visits_for_doctor_for_date(cls, doctor_id, date_visit):
+        q_objects = Q(doctor__user__id=doctor_id, date=date_visit)
+        return Visit.objects.filter(q_objects).order_by('start_time')
+

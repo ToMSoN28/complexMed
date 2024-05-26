@@ -6,6 +6,140 @@
     <div class="row">
     <!--    schedule-->
         <div class="col-md-8">
+            <div class="row">
+                <div class="col-md-1"></div>
+                <div class="col-md-11">
+                    <!--SEARCH FORM doc week-->
+                    <div class="card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color: #004080; ">
+                      <div class="row g-0" style="margin-bottom: 10px;">
+                        <form action="/dashboard/manager/" method="POST" class="d-flex">
+                          {% csrf_token %}
+                          <div class="col-md-5 border-right">
+                            <div class="col text-center">
+                              <label class="form-label" for="scheduleDoctor">Doctor:</label>
+                                <select id="scheduleDoctor" name="scheduleDoctor" class="form-select" style="width: 85%; margin: 0 auto;">
+                                    <!-- doc option -->
+<!--                                    <option value="0">Choose doctor</option>-->
+                                    {% for doc in doctors %}
+                                    <option value="{{ doc.user.id }}">{{ doc.user.first_name }} {{ doc.user.last_name }}</option>
+                                    {% endfor %}
+                                    <!-- ... -->
+                                </select>
+                            </div>
+                          </div>
+                          <div class="col-md-4 border-right">
+                            <div class="col text-center">
+                              <label class="form-label" for="selectWeek">Week:</label>
+                                <select id="selectWeek" name="selectWeek" class="form-select" style="width: 85%; margin: 0 auto;">
+                                    <!-- week option -->
+                                    <option value="this">This week</option>
+                                    <option value="next">Next week</option>
+                                    <option value="inTwo">In two weeks</option>
+                                    <option value="inThree">In three weeks</option>
+                                    <option value="inFour">In four weeks</option>
+                                    <option value="inFive">In five weeks</option>
+                                    <!-- ... -->
+                                </select>
+                            </div>
+                          </div>
+                          <div class="col-md-3 d-flex text-center align-items-center">
+                            <div class="col text-center">
+                                <div style="color: #004080;">.</div>
+                                <button type="submit" class="btn btn-outline-light">Search</button>
+                            </div>
+
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+<!--                    lista wizyt-->
+                    <div class="card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color: #004080; ">
+                        <div class="col-md-12 d-flex justify-content-center align-items-center">
+                            <h4>{{ doctor }}</h4>
+                        </div>
+<!--                        <h4>{{ doctor }}</h4>-->
+                        <div class="row">
+                            <div class="col-md-1"></div>
+                            {% for date in dates %}
+                                <div class="col-md-2 d-flex justify-content-center align-items-center">{{ date }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="container scrollable-today">
+                        {% for mo, tu, we, th, fri in schedule_table %}
+                        <div class="row">
+                            <div class="col-md-1"></div>
+                            <div class="col-md-2">
+                                {% if mo != null %}
+                                    <div class="card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color: #004080; ">
+                                        <div class="card-body">
+                                            <h5 class="card-title d-flex justify-content-center align-items-center">{{ mo.name.name }}</h5>
+                                            <div class="card-text d-flex justify-content-center align-items-center">
+                                                <p>{{ mo.start_time|time:"H:i" }} - {{ mo.end_time|time:"H:i" }}</p>
+                                            </div>
+                                            <a href="{% url 'visit_detail' mo.id %}" class="btn btn-outline-light d-flex justify-content-center align-items-center">Detail</a>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-2">
+                                {% if tu != null %}
+                                    <div class="card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color: #004080; ">
+                                        <div class="card-body">
+                                            <h5 class="card-title d-flex justify-content-center align-items-center">{{ tu.name.name }}</h5>
+                                            <div class="card-text d-flex justify-content-center align-items-center">
+                                                <p>{{ tu.start_time|time:"H:i" }} - {{ tu.end_time|time:"H:i" }}</p>
+                                            </div>
+                                            <a href="{% url 'visit_detail' tu.id %}" class="btn btn-outline-light d-flex justify-content-center align-items-center">Detail</a>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-2">
+                                {% if we != null %}
+                                    <div class="card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color: #004080; ">
+                                        <div class="card-body">
+                                            <h5 class="card-title d-flex justify-content-center align-items-center">{{ we.name.name }}</h5>
+                                            <div class="card-text d-flex justify-content-center align-items-center">
+                                                <p>{{ we.start_time|time:"H:i" }} - {{ we.end_time|time:"H:i" }}</p>
+                                            </div>
+                                            <a href="{% url 'visit_detail' we.id %}" class="btn btn-outline-light d-flex justify-content-center align-items-center">Detail</a>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-2">
+                                {% if th != null %}
+                                    <div class="card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color: #004080; ">
+                                        <div class="card-body">
+                                            <h5 class="card-title d-flex justify-content-center align-items-center">{{ th.name.name }}</h5>
+                                            <div class="card-text d-flex justify-content-center align-items-center">
+                                                <p>{{ th.start_time|time:"H:i" }} - {{ th.end_time|time:"H:i" }}</p>
+                                            </div>
+                                            <a href="{% url 'visit_detail' th.id %}" class="btn btn-outline-light d-flex justify-content-center align-items-center">Detail</a>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-2">
+                                {% if fri != null %}
+                                    <div class="card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color: #004080; ">
+                                        <div class="card-body">
+                                            <h5 class="card-title d-flex justify-content-center align-items-center">{{ fri.name.name }}</h5>
+                                            <div class="card-text d-flex justify-content-center align-items-center">
+                                                <p>{{ fri.start_time|time:"H:i" }} - {{ fri.end_time|time:"H:i" }}</p>
+                                            </div>
+                                            <a href="{% url 'visit_detail' fri.id %}" class="btn btn-outline-light d-flex justify-content-center align-items-center">Detail</a>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                </div>
+            </div>
 
         </div>
 
@@ -17,13 +151,13 @@
                 <div class="col-md-10">
                     <div class="card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color: #004080; ">
                         <div class="card-body text-center">
-                          <h5>Add visit name</h5>
-                          <form action="/visit-name/add" method="post">
+                          <form action="/visit-name/add/" method="post">
+                              <h5 for="visit_name">Add visit name</h5>
                               {% csrf_token %}
                               <div class="row" style="margin-bottom: 10px;">
                                   <div class="col-md-1"></div>
                                   <div class="col-md-10">
-                                      <input type="text" id="visit_name" name="visit_name" class="form-control">
+                                      <input type="text" id="visit_name" name="visit_name" class="form-control" required>
                                   </div>
                               </div>
                               <button type="submit" class="btn btn-success" name="addName">Add</button>
@@ -32,7 +166,7 @@
                     </div>
                 </div>
             </div>
-            <br />
+<!--            <br />-->
 
     <!--        add new visit-->
             <div class="row">
@@ -41,14 +175,14 @@
                     <div class="card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color: #004080; ">
                         <div class="card-body text-center">
                           <h5>Add new visit</h5>
-                          <form action="/visit-name/add" method="post">
+                          <form action="/visit/add/" method="post">
                               {% csrf_token %}
                               <div class="row" style="display: flex; align-items: center; margin-bottom: 10px;">
                                   <div class="col-md-3">
                                       <div class="form-label" for="selectName">Name:</div>
                                   </div>
                                   <div class="col-md-8">
-                                      <select id="selectName" name="selectName" class="form-select" style="margin: 0 auto;">
+                                      <select id="selectName" name="selectName" class="form-select" style="margin: 0 auto;" required>
                                           <option value="0">Choose Visit</option>
                                           {% for i in visits_names %}
                                           <option value="{{i.id}}">{{ i.name }}</option>
@@ -61,7 +195,7 @@
                                       <div class="form-label" for="selectDoctor">Doctor:</div>
                                   </div>
                                   <div class="col-md-8">
-                                      <select id="selectDoctor" name="selectDoctor" class="form-select" style="margin: 3 ;">
+                                      <select id="selectDoctor" name="selectDoctor" class="form-select" style="margin: 3 ;" required>
                                         <!-- doc option -->
                                         <option value="0">Choose doctor</option>
                                         {% for doc in doctors %}
@@ -76,7 +210,7 @@
                                       <label class="form-label" for="selectDate">Date:</label>
                                   </div>
                                   <div class="col-md-8">
-                                      <input type="date" id="selectDate" name="selectDate" class="form-control">
+                                      <input type="date" id="selectDate" name="selectDate" class="form-control" required>
                                   </div>
                               </div>
                               <div class="row" style="display: flex; align-items: center; margin-bottom: 10px;">
@@ -84,7 +218,7 @@
                                       <label class="form-label" for="selectStart">Start time:</label>
                                   </div>
                                   <div class="col-md-8">
-                                      <input type="time" id="selectStart" name="SelectStart" class="form-control">
+                                      <input type="time" id="selectStart" name="selectStart" class="form-control" required>
                                   </div>
                               </div>
                               <div class="row" style="display: flex; align-items: center; margin-bottom: 10px;">
@@ -92,7 +226,7 @@
                                       <label class="form-label" for="selectEnd">End time:</label>
                                   </div>
                                   <div class="col-md-8">
-                                      <input type="time" id="selectEnd" name="SelectEnd" class="form-control">
+                                      <input type="time" id="selectEnd" name="selectEnd" class="form-control" required>
                                   </div>
                               </div>
                               <div class="row" style="display: flex; align-items: center; margin-bottom: 10px;">
@@ -100,7 +234,7 @@
                                       <label class="form-label" for="room">Room:</label>
                                   </div>
                                   <div class="col-md-8">
-                                      <input type="number" id="room" name="room" min="1" max="12" class="form-control">
+                                      <input type="number" id="room" name="room" min="1" max="12" class="form-control" required>
                                   </div>
                               </div>
                               <div class="row" style="display: flex; align-items: center; margin-bottom: 10px;">
@@ -108,7 +242,7 @@
                                       <label class="form-label" for="price">Price:</label>
                                   </div>
                                   <div class="col-md-8">
-                                      <input type="number" id="price" name="price" min="0" step="20" class="form-control">
+                                      <input type="number" id="price" name="price" min="0" step="20" class="form-control" required>
                                   </div>
                               </div>
                               <button type="submit" class="btn btn-success" name="addName">Add</button>

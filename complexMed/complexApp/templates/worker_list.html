@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!--    <h2>Szczegóły pacjenta: {{ patient.first_name }} {{ patient.last_name }}</h2>-->
+<!--    <p>Data urodzenia: {{ patient.birthday }}</p>-->
+<!--    <p>PESEL: {{ patient.pesel }}</p>-->
+<!--    <p>Numer telefonu: {{ patient.phone_number }}</p>-->
+    <!-- Dodaj inne informacje o pacjencie -->
+
+<br />
+<div class="container-fluid" style="background-color: #ffffff;">
+  <div class="row" >
+    <!--PATIENT, SEARCH FORM AND VISITS LIST-->
+    <div class="col-md-12">
+      <div class="container sticky-container" style="background-color: #ffffff;">
+        <!--SEARCH FORM-->
+        <div class="card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color: #004080; ">
+          <div class="row g-0">
+            <form action="{% url 'workers_list' %}" method="POST" class="d-flex">
+              {% csrf_token %}
+              <div class="col-md-3 border-right">
+                <div class="col text-center">
+                  <label class="form-label" for="inputFirstName">First Name:</label>
+                  <input type="text" id="inputFirstName" name="inputFirstName" class="form-control form-control-lg" style="width: 85%; margin: 0 auto;" />
+                  <br />
+                </div>
+              </div>
+              <div class="col-md-3 border-right">
+                <div class="col text-center">
+                  <label class="form-label" for="inputLastName">Last Name:</label>
+                  <input type="text" id="inputLastName" name="inputLastName" class="form-control form-control-lg" style="width: 85%; margin: 0 auto;" />
+                </div>
+              </div>
+              <div class="col-md-3 border-right">
+                <div class="col text-center">
+                  <label class="form-label" for="inputUsername">Username:</label>
+                  <input type="text" id="inputUsername" name="inputUsername" class="form-control form-control-lg" style="width: 85%; margin: 0 auto;" />
+                </div>
+              </div>
+              <div class="col-md-3 d-flex align-items-center">
+                <div class="col text-center">
+                  <button type="submit" class="btn btn-outline-light">Search</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!--PATIENT INFO-->
+        <div class="card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color: #504080; ">
+          <div class="row g-0">
+            <div class="col-md-3 border-right d-flex align-items-center ">
+              <div class="col text-center">
+                <div class="card-body">
+                  <h5>Full name</h5>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3 border-right d-flex align-items-center ">
+              <div class="col text-center">
+                <div class="card-body">
+                  <h6>Username</h6>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3 border-right d-flex align-items-center ">
+              <div class="col text-center">
+                <div class="card-body">
+                  <h6>Email</h6>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-1 border-right d-flex align-items-center ">
+              <div class="col text-center">
+                <div class="card-body">
+                  <h6>Mg</h6>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-1 border-right d-flex align-items-center ">
+              <div class="col text-center">
+                <div class="card-body">
+                  <h6>Doc</h6>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-1 border-right d-flex align-items-center ">
+              <div class="col text-center">
+                <div class="card-body">
+                  <h6>Rec</h6>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+<!--      PATIENT LIST-->
+      <div class="container">
+        {% for worker in workers%}
+        <div class="card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color: #004080; ">
+          <div class="row g-0">
+            <div class="col-md-3 border-right d-flex align-items-center ">
+              <div class="col text-center">
+                <div class="card-body">
+                  <h5>{{ worker.user.first_name }} {{ worker.user.last_name }}</h5>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3 border-right d-flex align-items-center ">
+              <div class="col text-center">
+                <div class="card-body">
+                  <h6>{{ worker.user.username }}</h6>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3 border-right d-flex align-items-center ">
+              <div class="col text-center">
+                <div class="card-body">
+                  <h6>{{ worker.user.email }}</h6>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-1 border-right d-flex align-items-center ">
+              <div class="col text-center">
+                <div class="card-body">
+                    {% if worker.is_manager %}
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-lg" viewBox="0 0 16 16">
+                        <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+                      </svg>
+                    {% endif %}
+                </div>
+              </div>
+            </div>
+            <div class="col-md-1 border-right d-flex align-items-center ">
+              <div class="col text-center">
+                <div class="card-body">
+                  {% if worker.is_doctor %}
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-lg" viewBox="0 0 16 16">
+                        <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+                      </svg>
+                    {% endif %}
+                </div>
+              </div>
+            </div>
+            <div class="col-md-1 border-right d-flex align-items-center ">
+              <div class="col text-center">
+                <div class="card-body">
+                  {% if worker.is_receptionist %}
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-lg" viewBox="0 0 16 16">
+                        <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+                      </svg>
+                    {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+{% endblock %}
+  </div>
+</div>

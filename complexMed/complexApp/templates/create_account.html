@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% block content %}
+</br>
+  <div class="container-fluid">
+    <div class="row justify-content-center align-items-center">
+      <div class="col-md-9">
+        <div class="card" style="background-color: #004080; color: white; border-radius: 1rem;">
+          <div class="card-body p-5 text-center">
+            {% if error_msg != null%}
+            <div class="alert alert-danger" role="alert">
+              {{error_msg}}
+            </div>
+            {% endif %}
+            <div class="mb-md-1 mt-md-1 pb-1">
+              <h2 class="fw-bold mb-2 text-uppercase">CREATE ACCOUNT</h2>
+              <p class="text-white-50 mb-5">Enter worker</p>
+
+              <form method="post" action="{% url 'create_account' %}">
+                {% csrf_token %}
+                <div class="row mb-4">
+                  <div class="col-md-6 text-end">
+                    <label class="form-label" for="inputUsername">Username:</label>
+                  </div>
+                  <div class="col-md-3">
+                    <input type="text" id="inputUsername" name="inputUsername" class="form-control form-control-lg" />
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="row mb-4">
+                      <div class="col text-end">
+                        <label class="form-label" for="inputFirstName">First Name:</label>
+                      </div>
+                      <div class="col">
+                        <input type="text" id="inputFirstName" name="inputFirstName" class="form-control form-control-lg" />
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="row mb-4">
+                      <div class="col text-end">
+                        <label class="form-label" for="inputLastName">Last Name:</label>
+                      </div>
+                      <div class="col">
+                        <input type="text" id="inputLastName" name="inputLastName" class="form-control form-control-lg" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="row mb-4">
+                      <div class="col text-end">
+                        <label class="form-label" for="inputEmail">E-mail:</label>
+                      </div>
+                      <div class="col">
+                        <input type="text" id="inputEmail" name="inputEmail" class="form-control form-control-lg" />
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="row mb-4">
+                      <div class="col text-end">
+                        <label class="form-label" for="selectFunction">Function:</label>
+                      </div>
+                      <div class="col">
+                        <select id="selectFunction" name="selectFunction" class="form-select" style="margin: 0 auto;" required>
+    <!--                      <option value="0">Choose Visit</option>-->
+                            <option value="0">Receptionist</option>
+                            <option value="0">Doctor</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="row mb-4">
+                      <div class="col text-end">
+                        <label class="form-label" for="inputPassword">Password:</label>
+                      </div>
+                      <div class="col">
+                        <input type="password" id="inputPassword" name="inputPassword" class="form-control form-control-lg" />
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="row mb-4">
+                      <div class="col text-end">
+                        <label class="form-label" for="inputPasswordAgain">Password again:</label>
+                      </div>
+                      <div class="col">
+                        <input type="password" id="inputPasswordAgain" name="inputPasswordAgain" class="form-control form-control-lg" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <button class="btn btn-outline-light btn-lg px-5" type="submit">Register</button>
+              </form>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}

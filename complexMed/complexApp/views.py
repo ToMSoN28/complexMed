@@ -155,32 +155,6 @@ def cancel_visit(request, visit_id):
     return redirect('logout')
 
 
-@login_required
-def crate_visit_name(request):
-    worker = Worker.objects.get(user=request.user)
-    if worker.is_manager and request.method == 'POST':
-        name = request.POST['visit_name']
-        VisitName.create_visit_name(name)
-        return redirect('create_schedule')
-    return redirect('logout')
-
-
-@login_required
-def create_visit(request):
-    worker = Worker.objects.get(user=request.user)
-    if worker.is_manager and request.method == 'POST':
-        doc_id = request.POST['doc_id']
-        name_id = request.POST['name_id']
-        date = request.POST['date']
-        start = request.POST['start']
-        end = request.POST['end']
-        price = request.POST['price']
-        room = request.POST['room']
-
-        Visit.create_visit(doc_id, name_id, date, start, end, price, room)
-        return redirect('create_schedule')
-    return redirect('logout')
-
 
 
 @login_required
@@ -242,14 +216,157 @@ def add_visit_name(request):
         return redirect('manager_dashboard')
     return redirect('logout')
 
+@login_required
+def add_visit(request):
+    worker = Worker.objects.get(user=request.user)
+    if request.method == 'POST' and worker.is_manager:
+        name = request.POST['selectName']
+        doc = request.POST['selectDoctor']
+        date_v = request.POST['selectDate']
+        s_time = request.POST['selectStart']
+        e_time = request.POST['selectEnd']
+        room = request.POST['room']
+        price = request.POST['price']
+        Visit.create_visit(doc, name, datetime.strptime(date_v, "%Y-%m-%d").date(),
+                           datetime.strptime(s_time, "%H:%M").time(),
+                           datetime.strptime(e_time, "%H:%M").time(),
+                           price, room)
+        print(name, doc, date_v, s_time, e_time, room, price)
+        return redirect('manager_dashboard')
+    return redirect('logout')
+
+@login_required()
+def create_account(request):
+    worker = Worker.objects.get(user=request.user)
+    error_msg = None
+    if request.method == 'POST':
+        username = request.POST['inputUsername']
+        first = request.POST['inputFirstName']
+        last = request.POST['inputLastName']
+        email = request.POST['inputEmail']
+        function = request.POST['selectFunction']
+        password = request.POST['inputPassword']
+        password1 = request.POST['inputPasswordAgain']
+        is_receptionist, is_doctor = False, False
+        if function == '0':
+            is_receptionist = True
+            print("recept")
+        if function == '1':
+            is_doctor = True
+        if password == password1:
+            print("same passwords")
+            if Worker.username_valid(username):
+                Worker.create_worker(username=username, password=password,
+                                     email=email, first_name=first, last_name=last,
+                                     is_doctor=is_doctor, is_receptionist=is_receptionist, is_manager=False)
+                print("created", first, last, function)
+                return redirect('workers_list')
+            else:
+                error_msg = f"Username: {username} is already used. Create account again."
+        else:
+            error_msg = "Passwords are not the same. Create account again."
+        print(error_msg)
+
+    return render(request, 'create_account.html', {'worker': worker, 'error_msg': error_msg})
+
+@login_required
+def workers_list(request):
+    worker = Worker.objects.get(user=request.user)
+    if worker.is_manager:
+        q_objects = Q()
+        search_applied = False
+        if request.method == 'POST':
+            first = request.POST['inputFirstName']
+            last = request.POST['inputLastName']
+            username = request.POST['inputUsername']
+            if first:
+                q_objects &= Q(user__first_name__icontains=first)
+                search_applied = True
+            if last:
+                q_objects &= Q(user__last_name__icontains=last)
+                search_applied = True
+            if username:
+                q_objects &= Q(user__username__icontains=username)
+                search_applied = True
+        if search_applied:
+            workers = Worker.objects.filter(q_objects)
+        else:
+            workers = Worker.objects.all()
+        return render(request, 'worker_list.html', {'worker': worker, 'workers': workers})
+
+@login_required()
 def manager_dashboard(request):
     worker = Worker.objects.get(user=request.user)
     if worker.is_manager:
+        schedule_table = None
+        days_table = None
+        doctor = None
+        visits_names = VisitName.get_visits_names()
+        if request.method == "POST":
+            doc_id = request.POST['scheduleDoctor']
+            week = request.POST['selectWeek']
+            print(doc_id, week)
+            schedule_table, days_table = get_schedule_for_week_for_doctor(week, doc_id)
+            print(schedule_table, len(schedule_table))
+            doctor = worker.get_name(doc_id)
+            print(doctor)
         doctors = Worker.get_doctors()
-        return render(request, 'manager_dashboard.html', {'worker': worker})
+        print(doctors)
+        return render(request, 'manager_dashboard.html', {'worker': worker, 'doctor': doctor, 'schedule_table': schedule_table, 'dates': days_table, 'doctors': doctors, 'visits_names': visits_names})
     return redirect('logout')
 
 
+def start_end_of_working_week_for_date(date_of_week):
+    # today = datetime.date.today()
+    day_of_week = date_of_week.weekday()
+    start_of_week = date_of_week - timedelta(days=day_of_week)
+    end_of_week = start_of_week + timedelta(days=4)
+    return start_of_week, end_of_week
+
+def get_schedule_for_week_for_doctor(week, doctor_id):
+    today = date.today()
+    if week == 'next':
+        today += timedelta(days=7)
+    elif week == 'inTwo':
+        today += timedelta(days=14)
+        print(today)
+    elif week == 'inThree':
+        today += timedelta(days=21)
+    elif week == 'inFour':
+        today += timedelta(days=28)
+    elif week == 'inFive':
+        today += timedelta(days=35)
+    start_of_week, end_of_week = start_end_of_working_week_for_date(today)
+    current_date = start_of_week
+    schedule_table = []
+    days_table = []
+    while current_date <= end_of_week:
+        day_visit = Visit.gat_all_visits_for_doctor_for_date(doctor_id, current_date)
+        print(day_visit, current_date)
+        if len(day_visit) == 0:
+            schedule_table.append([])
+        else:
+            tmp = []
+            for visit in day_visit:
+                tmp.append(visit)
+            schedule_table.append(tmp)
+        days_table.append(current_date)
+        current_date += timedelta(days=1)
+    maximum = 0
+    for day in schedule_table:
+        if len(day) > maximum:
+            maximum = len(day)
+
+    sch_tab = []
+    for i in range(maximum):
+        tmp = []
+        for j in range(5):
+            if i < len(schedule_table[j]):
+                tmp.append(schedule_table[j][i])
+            else:
+                tmp.append(None)
+        sch_tab.append(tmp)
+    return sch_tab, days_table
 
 
 
