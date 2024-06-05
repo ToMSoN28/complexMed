@@ -71,7 +71,10 @@
                             <div class="col-md-1"></div>
                             <div class="col-md-2">
                                 {% if mo != null %}
-                                    <div class="card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color: #004080; ">
+                                    <div class="card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color: {% if mo.status == 'passed' %} #06156C;
+                                                                                                                                      {% elif mo.status == 'free' %} #01803F;
+                                                                                                                                      {% elif mo.status == 'occupied' %} #59048D;
+                                                                                                                                      {% else %} #9E029E; {% endif %} ">
                                         <div class="card-body">
                                             <h5 class="card-title d-flex justify-content-center align-items-center">{{ mo.name.name }}</h5>
                                             <div class="card-text d-flex justify-content-center align-items-center">
@@ -84,7 +87,10 @@
                             </div>
                             <div class="col-md-2">
                                 {% if tu != null %}
-                                    <div class="card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color: #004080; ">
+                                    <div class="card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color: {% if tu.status == 'passed' %} #06156C;
+                                                                                                                                      {% elif tu.status == 'free' %} #01803F;
+                                                                                                                                      {% elif tu.status == 'occupied' %} #59048D;
+                                                                                                                                      {% else %} #9E029E; {% endif %} ">
                                         <div class="card-body">
                                             <h5 class="card-title d-flex justify-content-center align-items-center">{{ tu.name.name }}</h5>
                                             <div class="card-text d-flex justify-content-center align-items-center">
@@ -97,7 +103,10 @@
                             </div>
                             <div class="col-md-2">
                                 {% if we != null %}
-                                    <div class="card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color: #004080; ">
+                                    <div class="card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color: {% if we.status == 'passed' %} #06156C;
+                                                                                                                                      {% elif we.status == 'free' %} #01803F;
+                                                                                                                                      {% elif we.status == 'occupied' %} #59048D;
+                                                                                                                                      {% else %} #9E029E; {% endif %} ">
                                         <div class="card-body">
                                             <h5 class="card-title d-flex justify-content-center align-items-center">{{ we.name.name }}</h5>
                                             <div class="card-text d-flex justify-content-center align-items-center">
@@ -110,7 +119,10 @@
                             </div>
                             <div class="col-md-2">
                                 {% if th != null %}
-                                    <div class="card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color: #004080; ">
+                                    <div class="card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color: {% if th.status == 'passed' %} #06156C;
+                                                                                                                                      {% elif th.status == 'free' %} #01803F;
+                                                                                                                                      {% elif th.status == 'occupied' %} #59048D;
+                                                                                                                                      {% else %} #9E029E; {% endif %} ">
                                         <div class="card-body">
                                             <h5 class="card-title d-flex justify-content-center align-items-center">{{ th.name.name }}</h5>
                                             <div class="card-text d-flex justify-content-center align-items-center">
@@ -123,7 +135,10 @@
                             </div>
                             <div class="col-md-2">
                                 {% if fri != null %}
-                                    <div class="card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color: #004080; ">
+                                    <div class="card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color: {% if fri.status == 'passed' %} #06156C;
+                                                                                                                                      {% elif fri.status == 'free' %} #01803F;
+                                                                                                                                      {% elif fri.status == 'occupied' %} #59048D;
+                                                                                                                                      {% else %} #9E029E; {% endif %} ">
                                         <div class="card-body">
                                             <h5 class="card-title d-flex justify-content-center align-items-center">{{ fri.name.name }}</h5>
                                             <div class="card-text d-flex justify-content-center align-items-center">

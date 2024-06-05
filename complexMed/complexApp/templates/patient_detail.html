@@ -132,9 +132,9 @@
                           <div class="row g-0">
                               <div class="col-md-3 border-right d-flex align-items-center border-end">
                                   <div class="col text-center">
-                                      <p>{{ visit.start_time }}</p>
+                                      <p>{{ visit.start_time|time:"H:i" }}</p>
 
-                                      <p>{{ visit.end_time }}</p>
+                                      <p>{{ visit.end_time|time:"H:i" }}</p>
                                   </div>
                               </div>
                               <div class="col-md-7 border-right">
@@ -214,7 +214,7 @@
                       <h5 class="card-title">{{ upcoming.name.name }}</h5>
                       <div class="card-text">
                         <div>{{ upcoming.date }}</div>
-                        <div>{{ upcoming.start_time }} - {{ upcoming.end_time }}</div>
+                        <div>{{ upcoming.start_time|time:"H:i" }} - {{ upcoming.end_time|time:"H:i" }}</div>
                         <p>Doc. {{ upcoming.doctor.user.first_name }} {{ upcoming.doctor.user.last_name }}</p>
                       </div>
                       <a href="{% url 'visit_detail' upcoming.id %}" class="btn btn-outline-light">Detail</a>
@@ -229,8 +229,8 @@
                       <h5 class="card-title">{{ past.name.name }}</h5>
                       <div class="card-text">
                         <div>{{ past.date }}</div>
-                        <div>{{ past.start_time }} - {{ past.end_time }}</div>
-                        <p>Doc. {{ upcoming.doctor.user.first_name }} {{ upcoming.doctor.user.last_name }}</p>
+                        <div>{{ past.start_time|time:"H:i" }} - {{ past.end_time|time:"H:i" }}</div>
+                        <p>Doc. {{ past.doctor.user.first_name }} {{ past.doctor.user.last_name }}</p>
                       </div>
                       <a href="{% url 'visit_detail' past.id %}" class="btn btn-outline-light">Detail</a>
                     </div>

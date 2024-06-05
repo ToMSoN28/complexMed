@@ -21,7 +21,7 @@
                     <label class="form-label" for="inputFirstName">First Name:</label>
                   </div>
                   <div class="col">
-                    <input type="text" id="inputFirstName" name="inputFirstName" class="form-control form-control-lg" />
+                    <input type="text" id="inputFirstName" name="inputFirstName" class="form-control form-control-lg" required/>
                   </div>
                 </div>
 
@@ -30,7 +30,7 @@
                     <label class="form-label" for="inputLastName">Last Name:</label>
                   </div>
                   <div class="col">
-                    <input type="text" id="inputLastName" name="inputLastName" class="form-control form-control-lg" />
+                    <input type="text" id="inputLastName" name="inputLastName" class="form-control form-control-lg" required/>
                   </div>
                 </div>
 
@@ -39,7 +39,7 @@
                     <label class="form-label" for="inputPesel">PESEL:</label>
                   </div>
                   <div class="col">
-                    <input type="text" id="inputPesel" name="inputPesel" class="form-control form-control-lg" />
+                    <input type="text" id="inputPesel" name="inputPesel" pattern="\d{11}" class="form-control form-control-lg" required/>
                   </div>
                 </div>
 
@@ -48,7 +48,7 @@
                     <label class="form-label" for="inputPhoneNumber">Phone Number:</label>
                   </div>
                   <div class="col">
-                    <input type="text" id="inputPhoneNumber" name="inputPhoneNumber" class="form-control form-control-lg" />
+                    <input type="text" id="inputPhoneNumber" name="inputPhoneNumber" pattern="\d{9}" class="form-control form-control-lg" required/>
                   </div>
                 </div>
 

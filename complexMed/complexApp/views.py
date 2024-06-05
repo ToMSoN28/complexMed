@@ -63,6 +63,7 @@ def patient_detail(request, patient_id):
         print(past_visits, upcoming_visits)
         visits = combination_visits_lists(upcoming_visits, past_visits)
         doctors = Worker.get_doctors()
+        print(doctors)
         visits_names = VisitName.get_visits_names()
         available_visits = []
         available_visits_info = []
@@ -168,6 +169,15 @@ def assign_patient_to_visit_fun(request, visit_id, patient_id):
             return render(request, 'serverError.html')
     return redirect('logout')
 
+@login_required
+def delete_visit(request, visit_id):
+    worker = Worker.objects.get(user=request.user)
+    if request.method == 'POST' and worker.is_manager:
+        visit = Visit.objects.get(pk=visit_id)
+        visit.delete_visit()
+        return redirect('manager_dashboard')
+    return redirect('logout')
+
 
 @login_required
 def patient_registration(request):
@@ -196,9 +206,10 @@ def doc_dashboard(request):
     if True:
         past_visits = worker.get_past_visits()
         upcoming_visits = worker.get_upcoming_visits()
-        print(past_visits, upcoming_visits)
+        # print(past_visits, upcoming_visits)
         visits = combination_visits_lists(upcoming_visits, past_visits)
         actual = worker.get_actual_visits()
+        print(actual)
         now = datetime.now()
         # next = list(upcoming_visits)
         # print(next)

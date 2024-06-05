@@ -9,7 +9,7 @@
     </div>
     <div class="card-body text-center">
       <div class="card-text">
-        <h5>{{ visit.date|date:"l: d F, Y " }}&nbsp;&nbsp;&nbsp;&nbsp;{{ visit.start_time }} - {{ visit.end_time }}</h5>
+        <h5>{{ visit.date|date:"l: d F, Y " }}&nbsp;&nbsp;&nbsp;&nbsp;{{ visit.start_time|time:"H:i" }} - {{ visit.end_time|time:"H:i" }}</h5>
         <br />
         <div class="row">
           <div class="col-md-2 border-right d-flex align-items-center"></div>
@@ -39,11 +39,36 @@
         {% if visit.doctor.id == worker.id and visit.status == "passed" %}
           <a href="{% url 'visit_edit_by_doc' visit.id %}" class="btn btn-warning">Edit Report</a>
         {% endif %}
+        {% if worker.is_manager and visit.status == "free" %}
+          <a class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal{{ visit.id }}">Delete Visit</a>
+        {% endif %}
       </div>
     </div>
   </div>
 </div>
 <br />
+
+<div class="modal fade" id="exampleModal{{ visit.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="post" action="/visit/{{ visit.pk }}/delete/">
+        {% csrf_token %}
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel{{ patient.id }}">Cancellation Visit</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          You sure, you want delete {{ visit.name.name }}
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-success" name="cancelBtnConfirm">Yes, delete</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
 
 {% if worker.is_doctor %}
 <div class="container">

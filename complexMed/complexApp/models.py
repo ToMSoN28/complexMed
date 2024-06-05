@@ -34,7 +34,7 @@ class Worker(models.Model):
 
     @classmethod
     def get_doctors(cls):
-        return not Worker.objects.filter(is_doctor=True)
+        return Worker.objects.filter(is_doctor=True)
 
     def get_past_visits(self):
         today = timezone.now().date()
