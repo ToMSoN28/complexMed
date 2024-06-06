@@ -214,7 +214,7 @@
                                         <!-- doc option -->
                                         <option value="0">Choose doctor</option>
                                         {% for doc in doctors %}
-                                        <option value="{{ doc.user.id }}">{{ doc.user.first_name }} {{ doc.user.last_name }}</option>
+                                        <option value="{{ doc.id }}">{{ doc.user.first_name }} {{ doc.user.last_name }}</option>
                                         {% endfor %}
                                         <!-- ... -->
                                       </select>

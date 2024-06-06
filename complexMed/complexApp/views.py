@@ -312,10 +312,17 @@ def manager_dashboard(request):
         schedule_table = None
         days_table = None
         doctor = None
+        doc_id = request.session.get('scheduleDoctor', None)
+        if doc_id is not None:
+            doctor = worker.get_name(doc_id)
+            week = request.session.get('scheduleDoctor')
+            schedule_table, days_table = get_schedule_for_week_for_doctor(week, doc_id)
         visits_names = VisitName.get_visits_names()
         if request.method == "POST":
             doc_id = request.POST['scheduleDoctor']
             week = request.POST['selectWeek']
+            request.session['scheduleDoctor'] = doc_id
+            request.session['selectWeek'] = week
             print(doc_id, week)
             schedule_table, days_table = get_schedule_for_week_for_doctor(week, doc_id)
             print(schedule_table, len(schedule_table))
