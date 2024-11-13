@@ -74,9 +74,12 @@ class Patient(models.Model):
         if month > 20:
             year += 2000
             month -= 20
-        elif month > 10:
+        elif month > 40:
             year += 2100
-            month -= 10
+            month -= 40
+        elif month > 60:
+            year += 2200
+            month -= 60
         else:
             year += 1900
         birthdate = datetime(year, month, day)
@@ -131,6 +134,7 @@ class Visit(models.Model):
             # błędy o przeminiętej dodanej
             visit = cls(doctor=doc, name=name, date=date, start_time=start, end_time=end, price=price, room=room)
             visit.save()
+            doc.visits.add(visit)
         else:
             print('termin zajęty, zwrócić wizytę która blokuje?')
 
@@ -182,11 +186,27 @@ class Visit(models.Model):
     def update_status(self):
         current_datetime = timezone.now()
         visit_datetime = datetime.combine(self.date, self.start_time)
-        visit_datetime_aware = timezone.make_aware(visit_datetime)
+        visit_datetime_start = timezone.make_aware(visit_datetime)
 
-        if visit_datetime_aware < current_datetime:
-            self.status = 'passed'
+        visit_datetime = datetime.combine(self.date, self.end_time)
+        visit_datetime_end = timezone.make_aware(visit_datetime)
+        # print(current_datetime)
+        # print(visit_datetime_start)
+        # print(visit_datetime_end)
+        # print(visit_datetime_start < current_datetime and self.status != 'passed')
+        if visit_datetime_start < current_datetime and self.status != 'passed':
+            if self.status == 'free':
+                self.status = 'passed'
+            if self.status == 'occupied':
+                self.status = 'in_process'
+            # print(self.status)
             self.save()
+        # print(visit_datetime_end <= current_datetime and self.status != 'passed')
+        if visit_datetime_end <= current_datetime and self.status != 'passed':
+            self.status = 'passed'
+            # print(self.status)
+            self.save()
+        # print(self.status)
 
     @classmethod
     def get_available_visits(cls, v_name, d_id, week):
@@ -199,13 +219,15 @@ class Visit(models.Model):
             q_objects &= Q(doctor__user__id=d_id)
 
         today = date.today()
+        day_num = today.weekday()
+        today = today - timedelta(days=day_num)
         date_filter = None
         if week == 'this':
-            date_filter = Q(date__range=(today, today + timedelta(days=7)))
+            date_filter = Q(date__range=(today, today + timedelta(days=6)))
         elif week == 'next':
-            date_filter = Q(date__range=(today + timedelta(days=7), today + timedelta(days=14)))
+            date_filter = Q(date__range=(today + timedelta(days=7), today + timedelta(days=13)))
         else:
-            date_filter = Q(date__range=(today + timedelta(days=14), today + timedelta(days=21)))
+            date_filter = Q(date__range=(today + timedelta(days=14), today + timedelta(days=20)))
         q_objects &= date_filter
 
         return Visit.objects.filter(q_objects).order_by('date', 'start_time')

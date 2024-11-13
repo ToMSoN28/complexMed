@@ -21,7 +21,7 @@
         <div class="row">
           <div class="col-md-2 border-right d-flex align-items-center"></div>
           <div class="col-md-5 border-right d-flex align-items-center">
-            <h5>{{ visit.start_time }} - {{ visit.end_time }}</h5>
+            <h5>{{ visit.start_time|time:"H:i" }} - {{ visit.end_time|time:"H:i" }}</h5>
           </div>
           <div class="col-md-5 border-right d-flex align-items-center">
             <h5>Birthday: {{ visit.patient.birthday|date:"d F, Y " }}</h5>

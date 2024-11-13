@@ -10,6 +10,11 @@
           <div class="card-body p-5 text-center">
 
             <div class="mb-md-1 mt-md-1 pb-1">
+              {% if error != null%}
+              <div class="alert alert-danger" role="alert" id="errorMsg">
+                {{error}}
+              </div>
+              {% endif %}
               <h2 class="fw-bold mb-2 text-uppercase">Patient Registration</h2>
               <p class="text-white-50 mb-5">Enter patient information</p>
 
@@ -52,7 +57,7 @@
                   </div>
                 </div>
 
-                <button class="btn btn-outline-light btn-lg px-5" type="submit">Register</button>
+                <button class="btn btn-outline-light btn-lg px-5" type="submit" id="buttonRegister">Register</button>
               </form>
             </div>
 

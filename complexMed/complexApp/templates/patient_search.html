@@ -39,7 +39,7 @@
               </div>
               <div class="col-md-3 d-flex align-items-center">
                 <div class="col text-center">
-                  <button type="submit" class="btn btn-outline-light">Search</button>
+                  <button type="submit" class="btn btn-outline-light" id="searchBtn">Search</button>
                 </div>
               </div>
             </form>
@@ -86,39 +86,40 @@
 <!--      PATIENT LIST-->
       <div class="container">
         {% for patient in patients%}
-        <div class="card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color: #004080; ">
+        <div data-patient-id="patient{{ patient.pk }}" class="patient-info card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color: #004080; ">
           <div class="row g-0">
             <div class="col-md-3 border-right d-flex align-items-center ">
               <div class="col text-center">
                 <div class="card-body">
-                  <h5>{{ patient.first_name }} {{ patient.last_name }}</h5>
+                  <h5 id="name">{{ patient.first_name }} {{ patient.last_name }}</h5>
                 </div>
               </div>
             </div>
             <div class="col-md-2 border-right d-flex align-items-center ">
               <div class="col text-center">
                 <div class="card-body">
-                  <h6>{{ patient.birthday|date:"F j, Y" }}</h6>
+                  <h6 id="birthDate">{{ patient.birthday|date:"F j, Y" }}</h6>
                 </div>
               </div>
             </div>
             <div class="col-md-2 border-right d-flex align-items-center ">
               <div class="col text-center">
                 <div class="card-body">
-                  <h6>{{ patient.pesel }}</h6>
+                  <h6 id="pesel">{{ patient.pesel }}</h6>
                 </div>
               </div>
             </div>
             <div class="col-md-2 border-right d-flex align-items-center ">
               <div class="col text-center">
                 <div class="card-body">
-                  <h6>{{ patient.phone_number }}</h6>
+                  <h6 id="phone">{{ patient.phone_number }}</h6>
                 </div>
               </div>
             </div>
             <div class="col-md-3 d-flex align-items-center">
               <div class="col text-center">
-                <a href="{% url 'patient_detail' patient_id=patient.id %}" class="btn btn-outline-light">Profile</a>              </div>
+                <a id="profileBtn" href="{% url 'patient_detail' patient_id=patient.id %}" class="btn btn-outline-light">Profile</a>
+              </div>
             </div>
           </div>
         </div>

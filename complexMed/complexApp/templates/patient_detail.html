@@ -9,13 +9,13 @@
     <div class="col-md-7">
       <div class="container" style="background-color: #ffffff;">
         <!--PATIENT-->
-        <div class="card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color: #004080; ">
+        <div class="patient-info card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color: #004080; ">
           <div class="row g-0">
             <div class="col-md-3 border-right d-flex align-items-center ">
               <div class="col text-center">
                 <div class="card-body">
                   <p>Full name:</p>
-                  <h5>{{ patient.first_name }} {{ patient.last_name }}</h5>
+                  <h5 id="name">{{ patient.first_name }} {{ patient.last_name }}</h5>
                 </div>
               </div>
             </div>
@@ -23,7 +23,7 @@
               <div class="col text-center">
                 <div class="card-body">
                   <p>Birthday:</p>
-                  <h6>{{ patient.birthday|date:"F j, Y" }}</h6>
+                  <h6 id="birthDate">{{ patient.birthday|date:"F j, Y" }}</h6>
                 </div>
               </div>
             </div>
@@ -31,7 +31,7 @@
               <div class="col text-center">
                 <div class="card-body">
                   <p>Pesel:</p>
-                  <h6>{{ patient.pesel }}</h6>
+                  <h6 id="pesel">{{ patient.pesel }}</h6>
                 </div>
               </div>
             </div>
@@ -39,7 +39,7 @@
               <div class="col text-center">
                 <div class="card-body">
                   <p>Phone:</p>
-                  <h6>{{ patient.phone_number }}</h6>
+                  <h6 id="phone">{{ patient.phone_number }}</h6>
                 </div>
               </div>
             </div>
@@ -48,7 +48,7 @@
 
         {% if worker.is_receptionist %}
         <!--SEARCH FORM-->
-        <div class="card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color: #004080; ">
+        <div class="available-visit-panel card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color: #004080; ">
           <div class="row g-0">
             <form action="{% url 'patient_detail' patient.id %}" method="POST" class="d-flex">
               {% csrf_token %}
@@ -95,7 +95,7 @@
               </div>
               <div class="col-md-3 d-flex align-items-center">
                 <div class="col text-center">
-                  <button type="submit" class="btn btn-outline-light">Search</button>
+                  <button type="submit" class="btn btn-outline-light" id="searchBtn">Search</button>
                 </div>
               </div>
             </form>
@@ -104,10 +104,11 @@
 
         <!--Days scroll frame-->
         <div class="container">
+            {% if available_info|length > 0 %}
               <nav id="navbar-example3" class="h-100 flex-column align-items-stretch pe-4">
-                <nav class="nav nav-pills flex-row">
+                <nav class="nav nav-pills flex-row nav-items">
                   {% for date in available_info %}
-                    <a class="nav-link" href="#item-{{ forloop.counter }}">{{ date.date|date:'F d' }}</a>
+                    <a class="nav-link" href="#item-{{ forloop.counter }}" id="link-{{ forloop.counter }}">{{ date.date|date:'F d' }}</a>
                   {% endfor %}
                 </nav>
                 <br />
@@ -127,46 +128,46 @@
                   </div>
                   {% for visit in available %}
                     {% if visit.date == date.date %}
-                      <div class="card mb-3 text-white" style="max-width: 100%; border-radius: 1rem;
-                       background-color: #0d503c;">
+                      <div class="available-visit card mb-3 text-white " style="max-width: 100%; border-radius: 1rem;
+                       background-color: #01803F;" data-visit-id="visit{{ visit.pk }}">
                           <div class="row g-0">
                               <div class="col-md-3 border-right d-flex align-items-center border-end">
                                   <div class="col text-center">
-                                      <p>{{ visit.start_time|time:"H:i" }}</p>
+                                      <p id="startTime">{{ visit.start_time|time:"H:i" }}</p>
 
-                                      <p>{{ visit.end_time|time:"H:i" }}</p>
+                                      <p id="endTime">{{ visit.end_time|time:"H:i" }}</p>
                                   </div>
                               </div>
                               <div class="col-md-7 border-right">
                                   <div class="card-body">
-                                      <h4 class="card-title">{{ visit.name.name }}</h4>
-                                      <div class="card-text"><small class="card-text">{{ visit.date }}</small></div>
+                                      <h4 class="card-title" id="visitName">{{ visit.name.name }}</h4>
+                                      <div class="card-text"><small class="card-text" id="visitDate">{{ visit.date }}</small></div>
                                       <div class="card-text">
-                                          <div>Dr. {{ visit.doctor.user.first_name }} {{ visit.doctor.user.last_name }}</div>
+                                          <div id="doctor">Doc. {{ visit.doctor.user.first_name }} {{ visit.doctor.user.last_name }}</div>
                                       </div>
                                   </div>
                               </div>
                               <div class="col-md-2 d-flex align-items-center">
-                                  <a href="#" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#exampleModal{{ visit.id }}">assign</a>
+                                  <a href="#" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#exampleModal{{ visit.id }}" id="assignBtn">assign</a>
                               </div>
                           </div>
                       </div>
                       <!--Confirm assigning-->
-                      <div class="modal fade" id="exampleModal{{ visit.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                      <div class="modal fade" id="exampleModal{{ visit.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-visit-id="confirm{{ visit.pk }}">
                         <div class="modal-dialog">
                           <div class="modal-content">
                             <form method="post" action="/visit/{{ visit.pk }}/assign/patient/{{ patient.id }}/">
                               {% csrf_token %}
                               <div class="modal-header">
-                                <h1 class="modal-title fs-5" id="exampleModalLabel{{ patient.id }}">Cancellation Visit</h1>
+                                <h1 class="modal-title fs-5" id="exampleModalLabel{{ patient.id }}">Confirmation Visit</h1>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                               </div>
                               <div class="modal-body">
                                 Assign {{ patient.first_name }} {{ patient.last_name }} for {{ visit.name.name }}
                               </div>
                               <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button type="submit" class="btn btn-success" name="cancelBtnConfirm">Yes, assign</button>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="close">Close</button>
+                                <button type="submit" class="btn btn-success" id="confirmBtn">Yes, assign</button>
                               </div>
                             </form>
                           </div>
@@ -177,6 +178,7 @@
                 </div>
               {% endfor %}
               </div>
+            {% endif %}
         </div>
         {% endif %}
       </div>
@@ -188,14 +190,14 @@
       <div class="container">
         <div class="row">
           <div class="col-md-6 text-center">
-              <div class="card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color: #004080; ">
+              <div class="card mb-3 text-white" id="upcomingVisits" style="max-width: 100%; border-radius: 1rem; background-color: #004080; ">
                   <div class="card-body">
                     <h4 class="card-title">Upcoming Visits</h4>
                   </div>
             </div>
           </div>
           <div class="col-md-6 text-center">
-              <div class="card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color: #004080; ">
+              <div class="card mb-3 text-white" id="pastVisits" style="max-width: 100%; border-radius: 1rem; background-color: #004080; ">
                   <div class="card-body">
                     <h4 class="card-title">Past Visits</h4>
                   </div>
@@ -209,30 +211,32 @@
             <div class="row">
               <div class="col-md-6 text-center">
                 {% if upcoming != null %}
-                  <div class="card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color: #004080; ">
+                  <div class="upcoming-visit card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color: #59048D; "
+                       upcoming-visit-id="visit{{ upcoming.pk }}">
                     <div class="card-body">
-                      <h5 class="card-title">{{ upcoming.name.name }}</h5>
+                      <h5 class="card-title" id="uVisitName">{{ upcoming.name.name }}</h5>
                       <div class="card-text">
-                        <div>{{ upcoming.date }}</div>
-                        <div>{{ upcoming.start_time|time:"H:i" }} - {{ upcoming.end_time|time:"H:i" }}</div>
-                        <p>Doc. {{ upcoming.doctor.user.first_name }} {{ upcoming.doctor.user.last_name }}</p>
+                        <div id="uVisitDate">{{ upcoming.date }}</div>
+                        <div id="uVisitTime">{{ upcoming.start_time|time:"H:i" }} - {{ upcoming.end_time|time:"H:i" }}</div>
+                        <p id="uDoctor">Doc. {{ upcoming.doctor.user.first_name }} {{ upcoming.doctor.user.last_name }}</p>
                       </div>
-                      <a href="{% url 'visit_detail' upcoming.id %}" class="btn btn-outline-light">Detail</a>
+                      <a href="{% url 'visit_detail' upcoming.id %}" class="btn btn-outline-light" id="uDetailBtn">Detail</a>
                     </div>
                   </div>
                 {% endif %}
               </div>
               <div class="col-md-6 text-center">
                 {% if past != null%}
-                  <div class="card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color: #004080; ">
+                  <div class="past-visit card mb-3 text-white" style="max-width: 100%; border-radius: 1rem; background-color: #59048D; "
+                   past-visit-id="visit{{ past.pk }}">
                     <div class="card-body">
-                      <h5 class="card-title">{{ past.name.name }}</h5>
+                      <h5 class="card-title" id="pVisitName">{{ past.name.name }}</h5>
                       <div class="card-text">
-                        <div>{{ past.date }}</div>
-                        <div>{{ past.start_time|time:"H:i" }} - {{ past.end_time|time:"H:i" }}</div>
-                        <p>Doc. {{ past.doctor.user.first_name }} {{ past.doctor.user.last_name }}</p>
+                        <div id="pVisitDate">{{ past.date }}</div>
+                        <div id="pVisitTime">{{ past.start_time|time:"H:i" }} - {{ past.end_time|time:"H:i" }}</div>
+                        <p id="pDoctor">Doc. {{ past.doctor.user.first_name }} {{ past.doctor.user.last_name }}</p>
                       </div>
-                      <a href="{% url 'visit_detail' past.id %}" class="btn btn-outline-light">Detail</a>
+                      <a href="{% url 'visit_detail' past.id %}" class="btn btn-outline-light" id="pDetailBtn">Detail</a>
                     </div>
                 </div>
                 {% endif %}

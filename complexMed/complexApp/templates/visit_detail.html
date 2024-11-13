@@ -3,44 +3,44 @@
 {% block content %}
 <br />
 <div class="container-fluid">
-  <div class="card mb-3 text-white" style="max-width: 60vw; left: 20%; border-radius: 1rem; background-color: #004080; ">
+  <div class="card mb-3 text-white" id="visitInfo" style="max-width: 60vw; left: 20%; border-radius: 1rem; background-color: #004080; ">
     <div class="card-header text-center">
-      <h2>{{ visit.name.name }}</h2>
+      <h2 id="visitName">{{ visit.name.name }}</h2>
     </div>
     <div class="card-body text-center">
       <div class="card-text">
-        <h5>{{ visit.date|date:"l: d F, Y " }}&nbsp;&nbsp;&nbsp;&nbsp;{{ visit.start_time|time:"H:i" }} - {{ visit.end_time|time:"H:i" }}</h5>
+        <h5 id="visitTime">{{ visit.date|date:"l: d F, Y " }}&nbsp;&nbsp;&nbsp;&nbsp;{{ visit.start_time|time:"H:i" }} - {{ visit.end_time|time:"H:i" }}</h5>
         <br />
         <div class="row">
           <div class="col-md-2 border-right d-flex align-items-center"></div>
           <div class="col-md-6 border-right d-flex align-items-center">
-            <h5>Doctor: {{ visit.doctor.user.first_name }} {{ visit.doctor.user.last_name }}</h5>
+            <h5 id="doctor">Doctor: {{ visit.doctor.user.first_name }} {{ visit.doctor.user.last_name }}</h5>
           </div>
           <div class="col-md-4 border-right d-flex align-items-center">
-            <h5>Room: {{ visit.room }}</h5>
+            <h5 id="room">Room: {{ visit.room }}</h5>
           </div>
         </div>
         <div class="row">
           <div class="col-md-2 border-right d-flex align-items-center"></div>
           <div class="col-md-6 border-right d-flex align-items-center">
-            <h5>Patient: {{ visit.patient.first_name }} {{ visit.patient.last_name }}</h5>
+            <h5 id="patient">Patient: {{ visit.patient.first_name }} {{ visit.patient.last_name }}</h5>
           </div>
           <div class="col-md-4 border-right d-flex align-items-center">
-            <h5>Price: {{ visit.price }} $</h5>
+            <h5 id="price">Price: {{ visit.price }} $</h5>
           </div>
         </div>
         <br />
-        {% if visit.status == "occupied"%}
-          <a href="#" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal">Cancel</a>
+        {% if visit.status == "occupied" and worker.is_receptionist%}
+          <a id="cancel" href="#" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#cancelModal">Cancel</a>
         {% endif %}
         {% if visit.doctor.id == worker.id and visit.status == "in_process" %}
-          <a href="{% url 'visit_edit_by_doc' visit.id %}" class="btn btn-info">Report Visit</a>
+          <a id="report" href="{% url 'visit_edit_by_doc' visit.id %}" class="btn btn-info">Report Visit</a>
         {% endif %}
         {% if visit.doctor.id == worker.id and visit.status == "passed" %}
-          <a href="{% url 'visit_edit_by_doc' visit.id %}" class="btn btn-warning">Edit Report</a>
+          <a id="edit" data-bs-toggle="modal" data-bs-target="#editModal"  class="btn btn-warning">Edit Report</a>
         {% endif %}
         {% if worker.is_manager and visit.status == "free" %}
-          <a class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal{{ visit.id }}">Delete Visit</a>
+          <a id="delete" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">Delete Visit</a>
         {% endif %}
       </div>
     </div>
@@ -48,30 +48,48 @@
 </div>
 <br />
 
-<div class="modal fade" id="exampleModal{{ visit.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <form method="post" action="/visit/{{ visit.pk }}/delete/">
         {% csrf_token %}
         <div class="modal-header">
-          <h1 class="modal-title fs-5" id="exampleModalLabel{{ patient.id }}">Cancellation Visit</h1>
+          <h1 class="modal-title fs-5" id="exampleModalLabel{{ patient.id }}">Delete Visit</h1>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           You sure, you want delete {{ visit.name.name }}
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="submit" class="btn btn-success" name="cancelBtnConfirm">Yes, delete</button>
+          <button id="closeDelete" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button id="yesDelete" type="submit" class="btn btn-success" name="cancelBtnConfirm">Yes, delete</button>
         </div>
       </form>
     </div>
   </div>
 </div>
 
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalL">Edit Visit</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          You sure, you want to edit {{ visit.name.name }}
+        </div>
+        <div class="modal-footer">
+          <button id="closeEdit" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <a id="yesEdit" type="submit" href="{% url 'visit_edit_by_doc' visit.id %}" class="btn btn-success" name="cancelBtnConfirm">Yes, edit</a>
+        </div>
+    </div>
+  </div>
+</div>
+
 
 {% if worker.is_doctor %}
-<div class="container">
+<div class="container" id="desc">
   <div class="row align-items-stretch">
     <div class="col-md-6">
       <div class="card mb-3 text-white" style="width: 100%; height: 300px; border-radius: 1rem; background-color: #004080; ">
@@ -80,7 +98,7 @@
         </div>
         <div class="card-body" style="overflow-y: auto">
           <div class="card-text">
-            <h6>{{ visit.description|linebreaks }}</h6>
+            <h6 id="DescriptionText">{{ visit.description|linebreaks }}</h6>
           </div>
         </div>
       </div>
@@ -93,7 +111,7 @@
         </div>
         <div class="card-body" style="overflow-y: auto">
           <div class="card-text">
-            <h6>{{ visit.recommendation|linebreaks }}</h6>
+            <h6 id="RecommendationText">{{ visit.recommendation|linebreaks }}</h6>
           </div>
         </div>
       </div>
@@ -102,7 +120,7 @@
 </div>
 {% endif %}
 
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="cancelModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <form method="post" action="/visit/{{ visit.pk }}/cancel/">
@@ -115,8 +133,8 @@
           Are you sure you want to cancel your appointment?
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="submit" class="btn btn-warning" name="cancelBtnConfirm">Yes, cancel</button>
+          <button id="closeCancel" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button id="yesCancel" type="submit" class="btn btn-warning" name="cancelBtnConfirm">Yes, cancel</button>
         </div>
       </form>
     </div>
