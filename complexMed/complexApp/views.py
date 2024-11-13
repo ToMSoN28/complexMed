@@ -1,5 +1,7 @@
-from datetime import datetime, date, timedelta
+from datetime import datetime, date, timedelta, time
+from random import randint
 
+from django.contrib.admin.views.decorators import staff_member_required
 from django.db.models import Q, Count
 from django.db.utils import IntegrityError
 from django.shortcuts import render, redirect, reverse
@@ -21,7 +23,12 @@ def login_view(request):
 
         if user is not None:
             login(request, user)
-            return redirect('all_visits')
+            worker = Worker.objects.get(user=user)
+            if worker.is_manager:
+                return redirect('manager_dashboard')
+            if worker.is_doctor:
+                return redirect('doc_dashboard')
+            return redirect('patient_search')
         else:
             messages.error(request, "Incorrect Login or Password")
 
@@ -37,15 +44,54 @@ def dashboard(request):
     return render(request, 'dashboard.html', {'worker': worker})
 
 
-@login_required
+# @login_required
 def logout_view(request):
     logout(request)
     return redirect('login')
+
+@login_required
+def change_password(request):
+    worker = Worker.objects.get(user=request.user)
+    err_mess = None
+
+    if request.method == 'POST':
+        old_password = request.POST['inputOldPassword']
+        password = request.POST['inputPassword']
+        password1 = request.POST['inputPasswordAgain']
+        user = request.user
+        if user.check_password(old_password):
+            if password == password1:
+                user.set_password(password)
+                user.save()
+
+                user = authenticate(request, username=user.username, password=password)
+                login(request, user)
+                if worker.is_manager:
+                    return redirect('manager_dashboard')
+                if worker.is_doctor:
+                    return redirect('doc_dashboard')
+                return redirect('patient_search')
+            else:
+                err_mess = "New passwords are not the same! Try again."
+        else:
+            err_mess = "Incorrect old password! Try again."
+    return render(request, 'change_password.html', {'worker': worker, 'err_mess': err_mess})
+
 
 
 @login_required
 def all_visits(request):
     worker = Worker.objects.get(user=request.user)
+    # for i in [1, 2, 3, 7]:
+    #     wor = Worker.objects.get(pk=i)
+    #     wor.delete()
+    # free = Visit.objects.filter(status='free')
+    # for i in range(20):
+    #     visit = free[randint(0, len(free))]
+    #     pat = randint(0, 9) + 17
+    #     Visit.assign_patient(visit.pk, pat)
+
+    update()
     visits = Visit.objects.all()
     # update_passed_visits()
     now = datetime.now()
@@ -102,7 +148,7 @@ def patient_search(request):
         if phone:
             q_objects &= Q(phone_number__icontains=phone)
 
-        filtered_patients = Patient.objects.filter(q_objects)
+        filtered_patients = Patient.objects.filter(q_objects).order_by('first_name', 'last_name')
         return render(request, 'patient_search.html', {'worker': worker, 'patients': filtered_patients})
     return render(request, 'patient_search.html', {'worker': worker, })
 
@@ -166,7 +212,7 @@ def assign_patient_to_visit_fun(request, visit_id, patient_id):
         if status:
             return redirect('patient_detail', patient_id=patient_id)
         else:
-            return render(request, 'serverError.html')
+            return redirect('patient_detail', patient_id=patient_id)
     return redirect('logout')
 
 @login_required
@@ -182,6 +228,7 @@ def delete_visit(request, visit_id):
 @login_required
 def patient_registration(request):
     worker = Worker.objects.get(user=request.user)
+    error = None
     if request.method == 'POST':
         first = request.POST['inputFirstName']
         last = request.POST['inputLastName']
@@ -189,28 +236,32 @@ def patient_registration(request):
         phone = request.POST['inputPhoneNumber']
 
         try:
-            new_patient = Patient.create_patient(first, last, pesel, phone)
-            print("Pacjent utworzony pomyślnie:", new_patient)
-            return redirect(reverse('patient_detail', args=[new_patient.id]))
+            if not Patient.objects.filter(pesel=pesel).exists():
+                new_patient = Patient.create_patient(first, last, pesel, phone)
+                print("Pacjent utworzony pomyślnie:", new_patient)
+                return redirect(reverse('patient_detail', args=[new_patient.id]))
+            error = f'Patient with pesel {pesel} already exist'
         except IntegrityError as e:
             print(f"Błąd podczas tworzenia pacjenta: {e}")
         except ValueError as e:
 
             print(f"Błąd podczas tworzenia pacjenta: {e}")
-    return render(request, 'register_patient.html', {'worker': worker})
+    return render(request, 'register_patient.html', {'worker': worker, 'error': error})
 
 
 @login_required
 def doc_dashboard(request):
     worker = Worker.objects.get(user=request.user)
     if True:
+        update()
+        print(worker.user.username)
         past_visits = worker.get_past_visits()
         upcoming_visits = worker.get_upcoming_visits()
-        # print(past_visits, upcoming_visits)
+        print(past_visits, upcoming_visits)
         visits = combination_visits_lists(upcoming_visits, past_visits)
         actual = worker.get_actual_visits()
         print(actual)
-        now = datetime.now()
+        now = timezone.now()
         # next = list(upcoming_visits)
         # print(next)
         return render(request, 'doc_dashboard.html', {'worker': worker, 'visits': visits, 'actual': actual, 'now': now })
@@ -300,15 +351,17 @@ def workers_list(request):
                 q_objects &= Q(user__username__icontains=username)
                 search_applied = True
         if search_applied:
-            workers = Worker.objects.filter(q_objects)
+            workers = Worker.objects.filter(q_objects).order_by('user__first_name', 'user__last_name', 'user__username')
         else:
-            workers = Worker.objects.all()
+            workers = Worker.objects.all().order_by('user__first_name', 'user__last_name', 'user__username')
         return render(request, 'worker_list.html', {'worker': worker, 'workers': workers})
 
 @login_required()
 def manager_dashboard(request):
     worker = Worker.objects.get(user=request.user)
-    if worker.is_manager:
+    # if worker.is_manager:
+    if True:
+        update()
         schedule_table = None
         days_table = None
         doctor = None
@@ -332,6 +385,169 @@ def manager_dashboard(request):
         print(doctors)
         return render(request, 'manager_dashboard.html', {'worker': worker, 'doctor': doctor, 'schedule_table': schedule_table, 'dates': days_table, 'doctors': doctors, 'visits_names': visits_names})
     return redirect('logout')
+
+@staff_member_required
+def clear_db(request):
+    user = request.user
+    Visit.objects.all().delete()
+    # VisitName.objects.all().delete()
+    # Patient.objects.all().delete()
+    # Worker.objects.all().delete()
+    return redirect('upload_data_to_db')
+
+@staff_member_required
+def upload_data_to_db(request):
+    upload_patients = [
+        ("Jan", "Kowalski", "04261771994", "600700800"),
+        ("Anna", "Nowak", "02301037664", "600700801"),
+        ("Piotr", "Wiśniewski", "97071654694", "600700802"),
+        ("Katarzyna", "Wójcik", "94111582546", "600700803"),
+        ("Marek", "Kowalczyk", "92073093870", "600700804"),
+        ("Ewa", "Zielińska", "80080144423", "600700805"),
+        ("Tomasz", "Szymański", "79110688653", "600700806"),
+        ("Magdalena", "Woźniak", "71070704260", "600700807"),
+        ("Paweł", "Kozłowski", "57021597837", "600700808"),
+        ("Joanna", "Jankowska", "53051268628", "600700809"),
+    ]
+
+
+    visits_or_treatments = [
+        "Konsultacja ortopedyczna",
+        "Leczenie urazów",
+        "Masaż leczniczy pleców",
+        "Diagnostyka bólu stawów",
+        "Kontrola po operacji",
+        "Badanie USG",
+        "Iniekcje dostawowe",
+        "Diagnostyka złamań",
+        "Ocena postawy ciała",
+        "Rehabilitacja"
+    ]
+
+    # for v_name in visits_or_treatments:
+    #     VisitName.create_visit_name(v_name)
+
+    today = date.today()
+    lorem = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+    mo2we, fr2we = start_end_of_working_week_for_date(today - timedelta(days=14))
+    mo1we, fr1we = start_end_of_working_week_for_date(today - timedelta(days=7))
+    passed_visits = [
+        ("doctor1", upload_patients[randint(0, 9)][2], visits_or_treatments[randint(0, 9)], mo2we + timedelta(days=0),
+         time(10, 0), time(11, 0), randint(1, 25)*20 + 120, randint(0, 4)),
+        ("doctor1", upload_patients[randint(0, 9)][2], visits_or_treatments[randint(0, 9)], mo2we + timedelta(days=0),
+         time(11, 0), time(12, 0), randint(1, 25)*20 + 120, randint(0, 4)),
+        ("doctor1", upload_patients[randint(0, 9)][2], visits_or_treatments[randint(0, 9)], mo2we + timedelta(days=0),
+         time(12, 0), time(13, 0), randint(1, 25)*20 + 120, randint(0, 4)),
+        ("doctor1", upload_patients[randint(0, 9)][2], visits_or_treatments[randint(0, 9)], mo2we + timedelta(days=0),
+         time(13, 0), time(14, 0), randint(1, 25)*20 + 120, randint(0, 4)),
+        ("doctor1", upload_patients[randint(0, 9)][2], visits_or_treatments[randint(0, 9)], mo2we + timedelta(days=0),
+         time(14, 0), time(15, 0), randint(1, 25)*20 + 120, randint(0, 4)),
+        ("doctor1", upload_patients[randint(0, 9)][2], visits_or_treatments[randint(0, 9)], mo2we + timedelta(days=1),
+         time(10, 0), time(11, 0), randint(1, 25)*20 + 120, randint(0, 4)),
+        ("doctor1", upload_patients[randint(0, 9)][2], visits_or_treatments[randint(0, 9)], mo2we + timedelta(days=1),
+         time(11, 0), time(12, 0), randint(1, 25)*20 + 120, randint(0, 4)),
+        ("doctor1", upload_patients[randint(0, 9)][2], visits_or_treatments[randint(0, 9)], mo2we + timedelta(days=1),
+         time(12, 0), time(13, 0), randint(1, 25)*20 + 120, randint(0, 4)),
+        ("doctor1", upload_patients[randint(0, 9)][2], visits_or_treatments[randint(0, 9)], mo2we + timedelta(days=1),
+         time(13, 0), time(14, 0), randint(1, 25)*20 + 120, randint(0, 4)),
+        ("doctor1", upload_patients[randint(0, 9)][2], visits_or_treatments[randint(0, 9)], mo2we + timedelta(days=3),
+         time(10, 0), time(11, 0), randint(1, 25)*20 + 120, randint(0, 4)),
+        ("doctor1", upload_patients[randint(0, 9)][2], visits_or_treatments[randint(0, 9)], mo2we + timedelta(days=3),
+         time(11, 0), time(12, 0), randint(1, 25)*20 + 120, randint(0, 4)),
+        ("doctor2", upload_patients[randint(0, 9)][2], visits_or_treatments[randint(0, 9)], mo2we + timedelta(days=2),
+         time(10, 0), time(11, 0), randint(1, 25)*20 + 120, randint(0, 4)),
+        ("doctor2", upload_patients[randint(0, 9)][2], visits_or_treatments[randint(0, 9)], mo2we + timedelta(days=2),
+         time(11, 0), time(12, 0), randint(1, 25)*20 + 120, randint(0, 4)),
+        ("doctor2", upload_patients[randint(0, 9)][2], visits_or_treatments[randint(0, 9)], mo2we + timedelta(days=2),
+         time(12, 0), time(13, 0), randint(1, 25)*20 + 120, randint(0, 4)),
+        ("doctor2", upload_patients[randint(0, 9)][2], visits_or_treatments[randint(0, 9)], mo2we + timedelta(days=2),
+         time(13, 0), time(14, 0), randint(1, 25)*20 + 120, randint(0, 4)),
+        ("doctor2", upload_patients[randint(0, 9)][2], visits_or_treatments[randint(0, 9)], mo2we + timedelta(days=3),
+         time(14, 0), time(15, 0), randint(1, 25)*20 + 120, randint(0, 4)),
+        ("doctor2", upload_patients[randint(0, 9)][2], visits_or_treatments[randint(0, 9)], mo2we + timedelta(days=3),
+         time(15, 0), time(16, 0), randint(1, 25)*20 + 120, randint(0, 4)),
+        ("doctor2", upload_patients[randint(0, 9)][2], visits_or_treatments[randint(0, 9)], mo2we + timedelta(days=3),
+         time(16, 0), time(17, 0), randint(1, 25)*20 + 120, randint(0, 4)),
+        ("doctor2", upload_patients[randint(0, 9)][2], visits_or_treatments[randint(0, 9)], mo2we + timedelta(days=4),
+         time(10, 0), time(11, 0), randint(1, 25)*20 + 120, randint(0, 4)),
+        ("doctor2", upload_patients[randint(0, 9)][2], visits_or_treatments[randint(0, 9)], mo2we + timedelta(days=4),
+         time(11, 0), time(11, 0), randint(1, 25)*20 + 120, randint(0, 4)),
+        ("doctor2", upload_patients[randint(0, 9)][2], visits_or_treatments[randint(0, 9)], mo2we + timedelta(days=4),
+         time(12, 0), time(13, 0), randint(1, 25)*20 + 120, randint(0, 4)),
+        ("doctor2", upload_patients[randint(0, 9)][2], visits_or_treatments[randint(0, 9)], mo2we + timedelta(days=4),
+         time(13, 0), time(14, 0), randint(1, 25)*20 + 120, randint(0, 4)),
+        ("doctor2", upload_patients[randint(0, 9)][2], visits_or_treatments[randint(0, 9)], mo1we + timedelta(days=0),
+         time(10, 0), time(11, 0), randint(1, 25)*20 + 120, randint(0, 4)),
+        ("doctor2", upload_patients[randint(0, 9)][2], visits_or_treatments[randint(0, 9)], mo1we + timedelta(days=0),
+         time(11, 0), time(12, 0), randint(1, 25)*20 + 120, randint(0, 4)),
+        ("doctor2", upload_patients[randint(0, 9)][2], visits_or_treatments[randint(0, 9)], mo1we + timedelta(days=0),
+         time(12, 0), time(13, 0), randint(1, 25)*20 + 120, randint(0, 4)),
+        ("doctor1", upload_patients[randint(0, 9)][2], visits_or_treatments[randint(0, 9)], mo1we + timedelta(days=3),
+         time(10, 0), time(11, 0), randint(1, 25)*20 + 120, randint(0, 4)),
+        ("doctor1", upload_patients[randint(0, 9)][2], visits_or_treatments[randint(0, 9)], mo1we + timedelta(days=3),
+         time(11, 0), time(12, 0), randint(1, 25)*20 + 120, randint(0, 4)),
+        ("doctor2", upload_patients[randint(0, 9)][2], visits_or_treatments[randint(0, 9)], mo1we + timedelta(days=2),
+         time(10, 0), time(11, 0), randint(1, 25)*20 + 120, randint(0, 4)),
+        ("doctor2", upload_patients[randint(0, 9)][2], visits_or_treatments[randint(0, 9)], mo1we + timedelta(days=2),
+         time(11, 0), time(12, 0), randint(1, 25)*20 + 120, randint(0, 4)),
+        ("doctor2", upload_patients[randint(0, 9)][2], visits_or_treatments[randint(0, 9)], mo1we + timedelta(days=2),
+         time(12, 0), time(13, 0), randint(1, 25)*20 + 120, randint(0, 4))
+    ]
+
+    for past in passed_visits:
+        doc = Worker.objects.filter(user__username=past[0]).first()
+        pac = Patient.objects.filter(pesel=past[1]).first()
+        visit_name = VisitName.objects.filter(name=past[2]).first()
+
+        past_visit = Visit(doctor=doc, patient=pac, status="passed", name=visit_name, date=past[3], start_time=past[4],
+                           end_time=past[5], description=lorem, recommendation=lorem, price=past[6], room=past[7])
+        past_visit.save()
+        doc.visits.add(past_visit)
+        pac.visits.add(past_visit)
+
+    working_hours = [
+        (time(9, 00), time(10, 00)),
+        (time(10, 00), time(11, 00)),
+        (time(11, 00), time(12, 00)),
+        (time(12, 00), time(13, 00)),
+        (time(13, 00), time(14, 00)),
+        (time(14, 00), time(15, 00)),
+        (time(15, 00), time(16, 00)),
+        (time(16, 00), time(17, 00)),
+        (time(17, 00), time(18, 00)),
+        (time(18, 00), time(19, 00)),
+    ]
+
+    for week in range(5):
+        mo, fri = start_end_of_working_week_for_date(today + timedelta(days=week*7))
+        for _ in range(5):
+            doc1_visit_range = randint(0, 6)
+            doc2_visit_range = randint(0, 6)
+            doc1 = Worker.objects.filter(user__username='doctor1').first()
+            doc2 = Worker.objects.filter(user__username='doctor2').first()
+            for i in range(doc1_visit_range):
+                visit_name = VisitName.objects.filter(name=visits_or_treatments[randint(0, 9)]).first()
+                Visit.create_visit(doc1.pk, visit_name.pk, mo, working_hours[i][0], working_hours[i][1], randint(1, 25)*20 + 120, randint(0, 4))
+            for i in range(doc2_visit_range):
+                visit_name = VisitName.objects.filter(name=visits_or_treatments[randint(0, 9)]).first()
+                Visit.create_visit(doc2.pk, visit_name.pk, mo, working_hours[i+3][0], working_hours[i+3][1], randint(1, 25) * 20 + 120, randint(0, 4))
+            mo = mo + timedelta(days=1)
+
+    free = Visit.objects.filter(status='free')
+    t = 0
+    for i in range(20):
+        visit = free[randint(0, len(free))]
+        if t > 9:
+            pat = randint(0, 9) + 17
+        else:
+            pat = t+19
+            t += 1
+        Visit.assign_patient(visit.pk, pat)
+
+    return redirect('all_visits')
+
+
+
 
 
 def start_end_of_working_week_for_date(date_of_week):
@@ -411,3 +627,17 @@ def get_visits_dates(visit_list):
         .order_by('date')
     )
     return unique_dates
+
+def update():
+    visits = Visit.objects.exclude(status='passed')
+    print(visits)
+    for visit in visits:
+        visit.update_status()
+    # current_time = timezone.now().time()
+    # current_date = timezone.now().date()
+    # Visit.objects.filter(Q(start_time__lt=current_time) & Q(date=current_date) & Q(status='free')).update(
+    #     status='passed')
+    # Visit.objects.filter(Q(start_time__lt=current_time) & Q(date=current_date) & Q(status='occupied')).update(
+    #     status='in_process')
+    # Visit.objects.filter(Q(end_time__lt=current_time) & Q(date=current_date) & Q(status='in_process')).update(
+    #     status='passed')

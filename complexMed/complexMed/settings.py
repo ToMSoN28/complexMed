@@ -138,6 +138,9 @@ AUTHENTICATION_BACKENDS = [
 
 LOGIN_URL = 'login'
 
-CRONJOBS = [
-    ('*/5 * * * *', 'complexApp.tasks.update_status_cron'),
-]
+SESSION_COOKIE_AGE = 3600
+SESSION_SAVE_EVERY_REQUEST = True
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+TIME_ZONE = 'Europe/Warsaw'
+USE_TZ = True

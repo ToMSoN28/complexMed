@@ -4,13 +4,14 @@ from django.urls import path, include
 from .views import (login_view, dashboard, logout_view, patient_registration, all_visits,
                     visit_detail, cancel_visit, assign_patient_to_visit_fun, patient_detail,
                     patient_search, visit_edit_by_doc, doc_dashboard, add_visit_name,
-                    manager_dashboard, add_visit, create_account, workers_list, delete_visit)
+                    manager_dashboard, add_visit, create_account, workers_list, delete_visit,
+                    change_password, clear_db, upload_data_to_db)
 
 # "Selenium Design Patterns and Best Practices" book for POM in WUT Library
 
 urlpatterns = [
     path('login/', login_view, name='login'),
-    path('dashboard/', dashboard, name='dashboard'),
+    # path('dashboard/', dashboard, name='dashboard'),
     path('dashboard/doctor/', doc_dashboard, name='doc_dashboard'),
     path('logout/', logout_view, name='logout'),
     path('patient-registration/', patient_registration, name='patient_registration'),
@@ -26,7 +27,10 @@ urlpatterns = [
     path('dashboard/manager/', manager_dashboard, name='manager_dashboard'),
     path('crate-account/', create_account, name='create_account'),
     path('workers-list/', workers_list, name='workers_list'),
-    path('visit/<int:visit_id>/delete/', delete_visit, name='delete_visit')
+    path('visit/<int:visit_id>/delete/', delete_visit, name='delete_visit'),
+    path('change-password/', change_password, name='change_password'),
+    path('clear-db/', clear_db, name='clear_db'),
+    path('upload-data-to-db/', upload_data_to_db, name='upload_data_to_db')
 ]
 
 if settings.DEBUG:
